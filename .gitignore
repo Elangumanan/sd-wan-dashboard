@@ -7,3 +7,5 @@ frontend/node_modules/
 .codesight
 .idea/
 .claude/
+
+package-lock.json
