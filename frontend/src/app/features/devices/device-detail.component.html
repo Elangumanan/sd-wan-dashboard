@@ -1,0 +1,167 @@
+<div class="device-page">
+
+  <!-- Header -->
+  <div class="device-page__header">
+    <div>
+      <nav class="breadcrumb" aria-label="breadcrumb">
+        <a class="breadcrumb__link" routerLink="/organizations">Organization</a>
+        <span class="breadcrumb__sep">/</span>
+        @if (device(); as d) {
+          <a class="breadcrumb__link"
+             [routerLink]="['/organizations', orgId, 'sites', siteId]">
+            {{ siteName || siteId }}
+          </a>
+          <span class="breadcrumb__sep">/</span>
+          <span class="breadcrumb__current">{{ d.name }}</span>
+        }
+      </nav>
+
+      @if (device(); as d) {
+        <div class="device-page__title-row">
+          <h1 class="device-page__title">{{ d.name }}</h1>
+          <span class="status-pill status-pill--{{ d.status.toLowerCase() }}">
+            <span class="status-pill__dot"></span>{{ d.status }}
+          </span>
+        </div>
+        <p class="device-page__subtitle">
+          Live interface view and WAN uplink history for the selected edge device.
+        </p>
+      } @else if (!loading()) {
+        <h1 class="device-page__title">Edge Device</h1>
+      }
+    </div>
+    <span class="device-page__updated">Last updated: Just now</span>
+  </div>
+
+  @if (loading()) {
+    <p class="state-text">Loading&hellip;</p>
+  }
+
+  @if (error(); as err) {
+    <div class="state-error"><p>Failed to load device: {{ err }}</p></div>
+  }
+
+  @if (device(); as d) {
+
+    <!-- Info tiles -->
+    <div class="info-tiles">
+      <app-tile title="Role"      [count]="d.role ?? '—'"    type="default" [compact]="true" />
+      <app-tile title="Status"    [count]="d.status"
+                [type]="d.status === 'ONLINE' ? 'success' : 'danger'"    [compact]="true" />
+      <app-tile title="Uptime"    [count]="d.uptime ?? '—'"  type="default" [compact]="true" />
+      <app-tile title="System IP" [count]="d.ipAddress"      type="default" [compact]="true" />
+      <app-tile title="Model"     [count]="d.model"          type="default" [compact]="true" />
+      <app-tile title="Site"      [count]="siteName || siteId"
+                type="info" [compact]="true" [clickable]="true"
+                (tileClick)="navigateToSite()" />
+    </div>
+
+    <!-- Two-column cards -->
+    <div class="cards-row">
+
+      <!-- Port Status (Live) -->
+      <app-card title="Port Status (Live)">
+        @if (wanInterfaces().length > 0) {
+          <h4 class="iface-section-title">WAN Interfaces</h4>
+          <table class="iface-table">
+            <thead>
+              <tr>
+                <th>Interface</th>
+                <th>Status</th>
+                <th>IP Address</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (iface of wanInterfaces(); track iface.id) {
+                <tr>
+                  <td class="iface-name">{{ iface.name }}</td>
+                  <td>
+                    <span class="iface-badge iface-badge--{{ interfaceStatus(iface).toLowerCase() }}">
+                      <span class="iface-badge__dot"></span>{{ interfaceStatus(iface) }}
+                    </span>
+                  </td>
+                  <td class="iface-ip">{{ iface.ipAddress ?? '—' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+
+        @if (lanInterfaces().length > 0) {
+          <h4 class="iface-section-title iface-section-title--spaced">LAN Interfaces</h4>
+          <table class="iface-table">
+            <thead>
+              <tr>
+                <th>Interface</th>
+                <th>Status</th>
+                <th>IP Address</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (iface of lanInterfaces(); track iface.id) {
+                <tr>
+                  <td class="iface-name">{{ iface.name }}</td>
+                  <td>
+                    <span class="iface-badge iface-badge--{{ interfaceStatus(iface).toLowerCase() }}">
+                      <span class="iface-badge__dot"></span>{{ interfaceStatus(iface) }}
+                    </span>
+                  </td>
+                  <td class="iface-ip">{{ iface.ipAddress ?? '—' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+
+        @if (wanInterfaces().length === 0 && lanInterfaces().length === 0) {
+          <p class="state-text">No interfaces found.</p>
+        }
+      </app-card>
+
+      <!-- Uplink Bandwidth -->
+      <app-card
+        title="Uplink Bandwidth (WAN1 &amp; WAN2)"
+        description="WAN-only utilization history. LAN interfaces are intentionally excluded.">
+
+        <!-- Time range selector projected into card header -->
+        <div card-actions class="range-selector">
+          <label class="range-selector__label" for="rangeSelect">Time Range</label>
+          <select
+            id="rangeSelect"
+            class="range-selector__select"
+            [value]="selectedRange()"
+            (change)="onRangeChange($event)">
+            <option value="1h">Last 1 hour</option>
+            <option value="6h">Last 6 hours</option>
+            <option value="24h">Last 24 hours</option>
+          </select>
+        </div>
+
+        @if (historyLoading()) {
+          <p class="state-text">Loading chart&hellip;</p>
+        }
+
+        <!-- Chart canvas -->
+        <div class="chart-area">
+          <canvas #wanChartCanvas></canvas>
+        </div>
+
+        <!-- WAN stat tiles -->
+        @if (wanStats().length > 0) {
+          <div class="wan-tile-row">
+            @for (stat of wanStats(); track stat.name; let i = $index) {
+              <app-tile
+                [title]="stat.name"
+                [count]="stat.current + ' Mbps'"
+                [subtitle]="'Avg: ' + stat.average + ' Mbps  ·  Peak: ' + stat.peak + ' Mbps'"
+                [type]="wanTileType(i)" />
+            }
+          </div>
+        }
+
+      </app-card>
+
+    </div>
+  }
+
+</div>

@@ -1,0 +1,135 @@
+<div class="overview">
+
+  <div class="overview__header">
+    <div class="overview__header-left">
+      <p class="overview__breadcrumb">Overview</p>
+      <h1 class="overview__title">SD-WAN Dashboard</h1>
+      <p class="overview__subtitle">High-level health summary across the tenant, sites, and edge devices.</p>
+    </div>
+    <span class="overview__updated">Last updated: Just now</span>
+  </div>
+
+  @if (isLoading()) {
+    <p class="loading-text">Loading dashboard&hellip;</p>
+  }
+
+  @if (overview(); as ov) {
+
+    <div class="stat-cards">
+      <app-tile title="Total Sites"        [count]="ov.totalSites"                 type="default" />
+      <app-tile title="Total Edge Devices" [count]="ov.totalEdgeDevices"           type="default" />
+      <app-tile title="Healthy Sites"      [count]="ov.siteStatusSummary.healthy"  type="success" />
+      <app-tile title="Degraded Sites"     [count]="ov.siteStatusSummary.degraded" type="warning" />
+      <app-tile title="Down Sites"         [count]="ov.siteStatusSummary.down"     type="danger"  />
+    </div>
+
+    <div class="charts-row">
+
+      <div class="chart-panel">
+        <h2 class="chart-panel__title">Sites by Status</h2>
+        <div class="chart-panel__body">
+          <app-donut-chart
+            [segments]="siteSegments()"
+            [centerValue]="ov.totalSites.toString()"
+            centerLabel="Total Sites"
+            [width]="160" [height]="160" />
+
+          <ul class="chart-legend">
+            <li class="chart-legend__item">
+              <span class="chart-legend__dot chart-legend__dot--healthy"></span>
+              <span class="chart-legend__name">Healthy</span>
+              <span class="chart-legend__stat">
+                {{ ov.siteStatusSummary.healthy }}
+                ({{ pct(ov.siteStatusSummary.healthy, ov.totalSites) }}%)
+              </span>
+            </li>
+            <li class="chart-legend__item">
+              <span class="chart-legend__dot chart-legend__dot--degraded"></span>
+              <span class="chart-legend__name">Degraded</span>
+              <span class="chart-legend__stat">
+                {{ ov.siteStatusSummary.degraded }}
+                ({{ pct(ov.siteStatusSummary.degraded, ov.totalSites) }}%)
+              </span>
+            </li>
+            <li class="chart-legend__item">
+              <span class="chart-legend__dot chart-legend__dot--down"></span>
+              <span class="chart-legend__name">Down</span>
+              <span class="chart-legend__stat">
+                {{ ov.siteStatusSummary.down }}
+                ({{ pct(ov.siteStatusSummary.down, ov.totalSites) }}%)
+              </span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="chart-panel">
+        <h2 class="chart-panel__title">Edge Devices by Status</h2>
+        <div class="chart-panel__body">
+          <app-donut-chart
+            [segments]="deviceSegments()"
+            [centerValue]="ov.totalEdgeDevices.toString()"
+            centerLabel="Total Devices"
+            [width]="160" [height]="160" />
+
+          <ul class="chart-legend">
+            <li class="chart-legend__item">
+              <span class="chart-legend__dot chart-legend__dot--healthy"></span>
+              <span class="chart-legend__name">Online</span>
+              <span class="chart-legend__stat">
+                {{ ov.deviceStatusSummary.online }}
+                ({{ pct(ov.deviceStatusSummary.online, ov.totalEdgeDevices) }}%)
+              </span>
+            </li>
+            <li class="chart-legend__item">
+              <span class="chart-legend__dot chart-legend__dot--down"></span>
+              <span class="chart-legend__name">Offline</span>
+              <span class="chart-legend__stat">
+                {{ ov.deviceStatusSummary.offline }}
+                ({{ pct(ov.deviceStatusSummary.offline, ov.totalEdgeDevices) }}%)
+              </span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  }
+
+  @if (snapshots().length > 0) {
+    <div class="snapshot-panel">
+      <div class="snapshot-panel__header">
+        <h2 class="snapshot-panel__title">Site Health Snapshot</h2>
+        <a routerLink="/organizations" class="snapshot-panel__action">Open organization view</a>
+      </div>
+
+      <table class="snapshot-table">
+        <thead>
+          <tr>
+            <th>Site Name</th>
+            <th>Status</th>
+            <th>Total Devices</th>
+            <th>Online</th>
+            <th>Offline</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of snapshots(); track row.siteId) {
+            <tr>
+              <td><a routerLink="/organizations" class="site-link">{{ row.siteName }}</a></td>
+              <td>
+                <span class="status-badge status-badge--{{ row.healthStatus.toLowerCase() }}">
+                  <span class="status-badge__dot"></span>{{ row.healthStatus }}
+                </span>
+              </td>
+              <td>{{ row.totalDevices }}</td>
+              <td>{{ row.onlineDevices }}</td>
+              <td>{{ row.offlineDevices }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+</div>

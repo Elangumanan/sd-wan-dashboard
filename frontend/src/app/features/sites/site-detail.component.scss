@@ -1,0 +1,173 @@
+.site-page {
+  padding: 1.5rem 2rem 2rem;
+  min-height: 100%;
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+
+  &__title-row {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    margin-bottom: .3rem;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  &__subtitle {
+    margin: 0;
+    font-size: .8rem;
+    color: #64748b;
+  }
+
+  &__updated {
+    font-size: .75rem;
+    color: #94a3b8;
+    white-space: nowrap;
+    margin-top: .25rem;
+  }
+}
+
+// ── Breadcrumb ────────────────────────────────────────────────────────
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+  margin-bottom: .4rem;
+
+  &__link {
+    font-size: .75rem;
+    color: #2563eb;
+    text-decoration: none;
+
+    &:hover { text-decoration: underline; }
+  }
+
+  &__sep { font-size: .75rem; color: #94a3b8; }
+}
+
+// ── States ────────────────────────────────────────────────────────────
+.state-text  { color: #64748b; font-size: .875rem; margin: .5rem 0 1.5rem; }
+
+.state-error {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+  border-radius: .5rem;
+  padding: .75rem 1rem;
+  font-size: .875rem;
+  margin-bottom: 1.5rem;
+}
+
+// ── Health badge (inline with title) ─────────────────────────────────
+.health-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  padding: .25rem .65rem;
+  border-radius: 999px;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+
+  &__dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+  }
+
+  &--healthy  { background: #dcfce7; color: #15803d; .health-badge__dot { background: #16a34a; } }
+  &--degraded { background: #fef3c7; color: #b45309; .health-badge__dot { background: #d97706; } }
+  &--down     { background: #fee2e2; color: #b91c1c; .health-badge__dot { background: #dc2626; } }
+}
+
+// ── Tile row ──────────────────────────────────────────────────────────
+.tile-row {
+  display: flex;
+  gap: .875rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+
+  app-tile { flex: 1 1 160px; }
+}
+
+// ── Devices panel ─────────────────────────────────────────────────────
+.devices-panel {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: .75rem;
+  padding: 1.25rem;
+
+  &__title {
+    margin: 0 0 1rem;
+    font-size: .95rem;
+    font-weight: 600;
+    color: #0f172a;
+  }
+}
+
+// ── Devices table ─────────────────────────────────────────────────────
+.devices-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .8rem;
+
+  th {
+    padding: .55rem .75rem;
+    text-align: left;
+    background: #f8fafc;
+    font-size: .7rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    border-bottom: 1px solid #e2e8f0;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: .65rem .75rem;
+    color: #334155;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+}
+
+.device-link {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 600;
+
+  &:hover { text-decoration: underline; }
+}
+
+// ── Status badges ─────────────────────────────────────────────────────
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  padding: .2rem .55rem;
+  border-radius: 999px;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+
+  &__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+
+  &--online  { background: #dcfce7; color: #15803d; .status-badge__dot { background: #16a34a; } }
+  &--offline { background: #fee2e2; color: #b91c1c; .status-badge__dot { background: #dc2626; } }
+}

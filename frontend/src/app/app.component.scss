@@ -1,0 +1,118 @@
+.shell {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+// ── Sidebar ──────────────────────────────────────────────────────────
+.sidebar {
+  width: 148px;
+  min-width: 148px;
+  background: #1a2d4a;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+
+  &__brand {
+    padding: 1.1rem 1rem;
+    color: #f1f5f9;
+    font-weight: 700;
+    font-size: .82rem;
+    line-height: 1.35;
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+  }
+
+  &__nav {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: .5rem 0;
+  }
+
+  &__link {
+    display: block;
+    padding: .55rem 1rem;
+    color: #8fa4bc;
+    font-size: .82rem;
+    text-decoration: none;
+    transition: background .15s, color .15s;
+
+    &:hover         { color: #f1f5f9; background: rgba(255, 255, 255, .06); }
+    &--active       { color: #f1f5f9; background: #243d5e; font-weight: 600; }
+  }
+
+  &__footer {
+    padding: .75rem 1rem 1rem;
+    border-top: 1px solid rgba(255, 255, 255, .08);
+  }
+
+  &__flow-label {
+    margin: 0 0 .2rem;
+    font-size: .65rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    color: #5a7a9c;
+    text-transform: uppercase;
+  }
+
+  &__flow-text {
+    margin: 0;
+    font-size: .72rem;
+    color: #f1f5f9;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+}
+
+// ── Main area ─────────────────────────────────────────────────────────
+.main-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+// ── Top bar ───────────────────────────────────────────────────────────
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  height: 52px;
+  min-height: 52px;
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+
+  &__title {
+    font-size: .9rem;
+    font-weight: 600;
+    color: #1e293b;
+  }
+
+  &__avatars {
+    display: flex;
+    gap: .4rem;
+  }
+}
+
+.avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .75rem;
+  font-weight: 700;
+  color: #fff;
+
+  &--blue  { background: #2563eb; }
+  &--green { background: #16a34a; }
+}
+
+// ── Page content ──────────────────────────────────────────────────────
+.page-content {
+  flex: 1;
+  overflow-y: auto;
+  background: #f1f5f9;
+}

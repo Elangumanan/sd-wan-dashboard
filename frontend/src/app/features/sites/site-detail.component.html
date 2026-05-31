@@ -1,0 +1,93 @@
+<div class="site-page">
+
+  <!-- Header -->
+  <div class="site-page__header">
+    <div>
+      <nav class="breadcrumb" aria-label="breadcrumb">
+        <a class="breadcrumb__link" routerLink="/organizations">Organization</a>
+        <span class="breadcrumb__sep">/</span>
+        @if (site(); as s) {
+          <a class="breadcrumb__link"
+             [routerLink]="['/organizations', s.orgId]">{{ s.name }}</a>
+        }
+      </nav>
+
+      @if (site(); as s) {
+        <div class="site-page__title-row">
+          <h1 class="site-page__title">{{ s.name }}</h1>
+          <span class="health-badge health-badge--{{ s.health.toLowerCase() }}">
+            <span class="health-badge__dot"></span>{{ s.health }}
+          </span>
+        </div>
+        <p class="site-page__subtitle">
+          Edge-device inventory and current availability for this site.
+        </p>
+      } @else if (!loading()) {
+        <h1 class="site-page__title">Site</h1>
+      }
+    </div>
+    <span class="site-page__updated">Last updated: Just now</span>
+  </div>
+
+  <!-- Loading / Error -->
+  @if (loading()) {
+    <p class="state-text">Loading&hellip;</p>
+  }
+
+  @if (error(); as err) {
+    <div class="state-error"><p>Failed to load site: {{ err }}</p></div>
+  }
+
+  @if (site(); as s) {
+
+    <!-- Tiles -->
+    <div class="tile-row">
+      <app-tile title="Total Edge Devices" [count]="s.deviceCount"  type="default" />
+      <app-tile title="Online"             [count]="onlineCount()"  type="success" />
+      <app-tile title="Offline"            [count]="offlineCount()" type="danger"  />
+    </div>
+
+    <!-- Devices table -->
+    <div class="devices-panel">
+      <h2 class="devices-panel__title">Edge Devices</h2>
+
+      @if (devices().length === 0) {
+        <p class="state-text">No devices found for this site.</p>
+      } @else {
+        <table class="devices-table">
+          <thead>
+            <tr>
+              <th>Device Name</th>
+              <th>Role</th>
+              <th>Uptime</th>
+              <th>Status</th>
+              <th>System IP</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (device of devices(); track device.id) {
+              <tr>
+                <td>
+                  <a class="device-link"
+                     [routerLink]="['/organizations', orgId, 'sites', siteId, 'devices', device.id]">
+                    {{ device.name }}
+                  </a>
+                </td>
+                <td>{{ device.role ?? device.model }}</td>
+                <td>{{ device.uptime ?? '—' }}</td>
+                <td>
+                  <span class="status-badge status-badge--{{ device.status.toLowerCase() }}">
+                    <span class="status-badge__dot"></span>{{ device.status }}
+                  </span>
+                </td>
+                <td>{{ device.ipAddress }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+
+  }
+
+</div>

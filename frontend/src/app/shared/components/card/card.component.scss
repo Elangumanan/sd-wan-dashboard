@@ -1,0 +1,40 @@
+.card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: .75rem;
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.25rem .75rem;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  &__header-left { flex: 1; }
+
+  &__header-actions {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    flex-shrink: 0;
+  }
+
+  &__title {
+    margin: 0 0 .15rem;
+    font-size: .9rem;
+    font-weight: 600;
+    color: #0f172a;
+  }
+
+  &__description {
+    margin: 0;
+    font-size: .75rem;
+    color: #64748b;
+    line-height: 1.4;
+  }
+
+  &__body { padding: 1rem 1.25rem; }
+}

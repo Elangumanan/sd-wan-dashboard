@@ -67,21 +67,21 @@ public class MockDataStore {
 
         for (Device d : List.of(
                 // site-001 — all ONLINE → HEALTHY
-                device("dev-001", "site-001", "NYC-EDGE-01",   "Cisco ISR 4331", DeviceStatus.ONLINE,  "10.1.1.1", "17.12.3", onlineAt),
-                device("dev-002", "site-001", "NYC-EDGE-02",   "Cisco ISR 4331", DeviceStatus.ONLINE,  "10.1.1.2", "17.12.3", onlineAt),
-                device("dev-003", "site-001", "NYC-CORE-01",   "Cisco ISR 4451", DeviceStatus.ONLINE,  "10.1.1.3", "17.12.3", onlineAt),
+                device("dev-001", "site-001", "NYC-EDGE-01",   "Cisco ISR 4331", DeviceStatus.ONLINE,  DeviceRole.ACTIVE,  "10.1.1.1", "17.12.3", onlineAt),
+                device("dev-002", "site-001", "NYC-EDGE-02",   "Cisco ISR 4331", DeviceStatus.ONLINE,  DeviceRole.STANDBY, "10.1.1.2", "17.12.3", onlineAt),
+                device("dev-003", "site-001", "NYC-CORE-01",   "Cisco ISR 4451", DeviceStatus.ONLINE,  DeviceRole.ACTIVE,  "10.1.1.3", "17.12.3", onlineAt),
                 // site-002 — dev-005 offline → DEGRADED
-                device("dev-004", "site-002", "LAX-EDGE-01",   "Cisco ISR 4331", DeviceStatus.ONLINE,  "10.2.1.1", "17.11.2", onlineAt),
-                device("dev-005", "site-002", "LAX-EDGE-02",   "Cisco ISR 4331", DeviceStatus.OFFLINE, "10.2.1.2", "17.11.2", offline5h),
-                device("dev-006", "site-002", "LAX-CORE-01",   "Cisco ISR 4451", DeviceStatus.ONLINE,  "10.2.1.3", "17.11.2", onlineAt),
+                device("dev-004", "site-002", "LAX-EDGE-01",   "Cisco ISR 4331", DeviceStatus.ONLINE,  DeviceRole.ACTIVE,  "10.2.1.1", "17.11.2", onlineAt),
+                device("dev-005", "site-002", "LAX-EDGE-02",   "Cisco ISR 4331", DeviceStatus.OFFLINE, DeviceRole.STANDBY, "10.2.1.2", "17.11.2", offline5h),
+                device("dev-006", "site-002", "LAX-CORE-01",   "Cisco ISR 4451", DeviceStatus.ONLINE,  DeviceRole.ACTIVE,  "10.2.1.3", "17.11.2", onlineAt),
                 // site-003 — all offline → DOWN
-                device("dev-007", "site-003", "CHI-EDGE-01",   "Cisco ISR 4331", DeviceStatus.OFFLINE, "10.3.1.1", "17.10.1", offline40h),
-                device("dev-008", "site-003", "CHI-CORE-01",   "Cisco ISR 4451", DeviceStatus.OFFLINE, "10.3.1.2", "17.10.1", offline40h),
+                device("dev-007", "site-003", "CHI-EDGE-01",   "Cisco ISR 4331", DeviceStatus.OFFLINE, DeviceRole.ACTIVE,  "10.3.1.1", "17.10.1", offline40h),
+                device("dev-008", "site-003", "CHI-CORE-01",   "Cisco ISR 4451", DeviceStatus.OFFLINE, DeviceRole.ACTIVE,  "10.3.1.2", "17.10.1", offline40h),
                 // site-004 — all ONLINE → HEALTHY
-                device("dev-009", "site-004", "SEA-EDGE-01",   "Cisco ISR 4331", DeviceStatus.ONLINE,  "10.4.1.1", "17.12.3", onlineAt),
-                device("dev-010", "site-004", "SEA-EDGE-02",   "Cisco ISR 4331", DeviceStatus.ONLINE,  "10.4.1.2", "17.12.3", onlineAt),
-                device("dev-011", "site-004", "SEA-CORE-01",   "Cisco ISR 4451", DeviceStatus.ONLINE,  "10.4.1.3", "17.12.3", onlineAt),
-                device("dev-012", "site-004", "SEA-BACKUP-01", "Cisco ISR 4331", DeviceStatus.ONLINE,  "10.4.1.4", "17.12.3", onlineAt)
+                device("dev-009", "site-004", "SEA-EDGE-01",   "Cisco ISR 4331", DeviceStatus.ONLINE,  DeviceRole.ACTIVE,  "10.4.1.1", "17.12.3", onlineAt),
+                device("dev-010", "site-004", "SEA-EDGE-02",   "Cisco ISR 4331", DeviceStatus.ONLINE,  DeviceRole.STANDBY, "10.4.1.2", "17.12.3", onlineAt),
+                device("dev-011", "site-004", "SEA-CORE-01",   "Cisco ISR 4451", DeviceStatus.ONLINE,  DeviceRole.ACTIVE,  "10.4.1.3", "17.12.3", onlineAt),
+                device("dev-012", "site-004", "SEA-BACKUP-01", "Cisco ISR 4331", DeviceStatus.ONLINE,  DeviceRole.STANDBY, "10.4.1.4", "17.12.3", onlineAt)
         )) {
             devices.put(d.id(), d);
         }
@@ -238,8 +238,9 @@ public class MockDataStore {
     }
 
     private static Device device(String id, String siteId, String name, String model,
-                                  DeviceStatus status, String ip, String firmware, Instant lastSeen) {
-        return new Device(id, siteId, name, model, status, ip, firmware, lastSeen);
+                                  DeviceStatus status, DeviceRole role, String ip,
+                                  String firmware, Instant lastSeen) {
+        return new Device(id, siteId, name, model, status, role, ip, firmware, lastSeen);
     }
 
     private static double round2(double v) {

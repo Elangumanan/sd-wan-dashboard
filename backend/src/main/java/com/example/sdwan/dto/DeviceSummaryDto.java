@@ -1,5 +1,6 @@
 package com.example.sdwan.dto;
 
+import com.example.sdwan.domain.DeviceRole;
 import com.example.sdwan.domain.DeviceStatus;
 
 import java.util.Objects;
@@ -11,15 +12,17 @@ public final class DeviceSummaryDto {
     private final String       name;
     private final String       model;
     private final DeviceStatus status;
+    private final DeviceRole   role;
     private final String       ipAddress;
 
     public DeviceSummaryDto(String id, String siteId, String name, String model,
-                             DeviceStatus status, String ipAddress) {
+                             DeviceStatus status, DeviceRole role, String ipAddress) {
         this.id        = Objects.requireNonNull(id,        "id");
         this.siteId    = Objects.requireNonNull(siteId,    "siteId");
         this.name      = Objects.requireNonNull(name,      "name");
         this.model     = Objects.requireNonNull(model,     "model");
         this.status    = Objects.requireNonNull(status,    "status");
+        this.role      = Objects.requireNonNull(role,      "role");
         this.ipAddress = Objects.requireNonNull(ipAddress, "ipAddress");
     }
 
@@ -28,6 +31,7 @@ public final class DeviceSummaryDto {
     public String       name()      { return name; }
     public String       model()     { return model; }
     public DeviceStatus status()    { return status; }
+    public DeviceRole   role()      { return role; }
     public String       ipAddress() { return ipAddress; }
 
     @Override
@@ -39,16 +43,17 @@ public final class DeviceSummaryDto {
             && Objects.equals(name, other.name)
             && Objects.equals(model, other.model)
             && status == other.status
+            && role   == other.role
             && Objects.equals(ipAddress, other.ipAddress);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, siteId, name, model, status, ipAddress);
+        return Objects.hash(id, siteId, name, model, status, role, ipAddress);
     }
 
     @Override
     public String toString() {
-        return "DeviceSummaryDto[id=" + id + ", name=" + name + ", status=" + status + "]";
+        return "DeviceSummaryDto[id=" + id + ", name=" + name + ", status=" + status + ", role=" + role + "]";
     }
 }

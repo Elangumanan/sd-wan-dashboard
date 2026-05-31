@@ -56,7 +56,7 @@ public class DeviceServiceImpl implements DeviceService {
                 .toList();
         return new DeviceDetailDto(
                 device.id(), device.siteId(), device.name(), device.model(),
-                device.status(), device.ipAddress(), device.firmwareVersion(),
+                device.status(), device.role(), device.ipAddress(), device.firmwareVersion(),
                 device.lastSeen().toString(),
                 interfaces
         );

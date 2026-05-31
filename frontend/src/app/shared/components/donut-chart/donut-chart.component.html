@@ -1,0 +1,14 @@
+<div class="chart-wrapper">
+  <canvas #chartCanvas></canvas>
+
+  @if (centerValue() || centerLabel()) {
+    <div class="chart-center">
+      @if (centerValue()) {
+        <span class="chart-center__value">{{ centerValue() }}</span>
+      }
+      @if (centerLabel()) {
+        <span class="chart-center__label">{{ centerLabel() }}</span>
+      }
+    </div>
+  }
+</div>

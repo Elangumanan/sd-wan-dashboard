@@ -1,0 +1,211 @@
+.device-page {
+  padding: 1.5rem 2rem 2rem;
+  min-height: 100%;
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+
+  &__title-row {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    margin-bottom: .3rem;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  &__subtitle {
+    margin: 0;
+    font-size: .8rem;
+    color: #64748b;
+  }
+
+  &__updated {
+    font-size: .75rem;
+    color: #94a3b8;
+    white-space: nowrap;
+    margin-top: .25rem;
+  }
+}
+
+// ── Breadcrumb ────────────────────────────────────────────────────────
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .35rem;
+  margin-bottom: .4rem;
+
+  &__link {
+    font-size: .75rem;
+    color: #2563eb;
+    text-decoration: none;
+    &:hover { text-decoration: underline; }
+  }
+
+  &__sep     { font-size: .75rem; color: #94a3b8; }
+  &__current { font-size: .75rem; color: #64748b; }
+}
+
+// ── Status pill (inline with title) ──────────────────────────────────
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  padding: .25rem .65rem;
+  border-radius: 999px;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+
+  &__dot { width: 7px; height: 7px; border-radius: 50%; }
+
+  &--online  { background: #dcfce7; color: #15803d; .status-pill__dot { background: #16a34a; } }
+  &--offline { background: #fee2e2; color: #b91c1c; .status-pill__dot { background: #dc2626; } }
+}
+
+// ── States ────────────────────────────────────────────────────────────
+.state-text  { color: #64748b; font-size: .875rem; margin: .5rem 0 1rem; }
+
+.state-error {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+  border-radius: .5rem;
+  padding: .75rem 1rem;
+  font-size: .875rem;
+  margin-bottom: 1.5rem;
+}
+
+// ── Info tiles ────────────────────────────────────────────────────────
+.info-tiles {
+  display: flex;
+  gap: .75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+
+  app-tile { flex: 1 1 120px; }
+}
+
+// ── Two-column cards row ──────────────────────────────────────────────
+.cards-row {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 1.25rem;
+  align-items: start;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ── Interface section ─────────────────────────────────────────────────
+.iface-section-title {
+  margin: 0 0 .5rem;
+  font-size: .8rem;
+  font-weight: 600;
+  color: #475569;
+
+  &--spaced { margin-top: 1.25rem; }
+}
+
+.iface-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .8rem;
+  margin-bottom: .25rem;
+
+  th {
+    padding: .4rem .6rem;
+    text-align: left;
+    font-size: .68rem;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  td {
+    padding: .55rem .6rem;
+    color: #334155;
+    border-bottom: 1px solid #f8fafc;
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+}
+
+.iface-name { font-weight: 500; }
+.iface-ip   { color: #64748b; font-size: .78rem; }
+
+// ── Interface status badges ───────────────────────────────────────────
+.iface-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
+  padding: .15rem .45rem;
+  border-radius: 999px;
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .03em;
+
+  &__dot { width: 5px; height: 5px; border-radius: 50%; }
+
+  &--up   { background: #dcfce7; color: #15803d; .iface-badge__dot { background: #16a34a; } }
+  &--down { background: #fee2e2; color: #b91c1c; .iface-badge__dot { background: #dc2626; } }
+}
+
+// ── Range selector ────────────────────────────────────────────────────
+.range-selector {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+
+  &__label {
+    font-size: .72rem;
+    color: #64748b;
+    white-space: nowrap;
+  }
+
+  &__select {
+    font-size: .75rem;
+    color: #334155;
+    border: 1px solid #e2e8f0;
+    border-radius: .4rem;
+    padding: .25rem .5rem;
+    background: #fff;
+    cursor: pointer;
+    outline: none;
+
+    &:focus { border-color: #2563eb; }
+  }
+}
+
+// ── Chart area ────────────────────────────────────────────────────────
+.chart-area {
+  position: relative;
+  height: 200px;
+  margin-bottom: 1rem;
+
+  canvas { width: 100% !important; height: 100% !important; }
+}
+
+// ── WAN stat tiles ────────────────────────────────────────────────────
+.wan-tile-row {
+  display: flex;
+  gap: .75rem;
+  flex-wrap: wrap;
+  padding-top: .75rem;
+  border-top: 1px solid #f1f5f9;
+
+  app-tile { flex: 1 1 140px; }
+}

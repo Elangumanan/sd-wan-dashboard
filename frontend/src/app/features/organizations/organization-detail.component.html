@@ -1,0 +1,90 @@
+<div class="org-page">
+
+  <div class="org-page__header">
+    <div>
+      <p class="org-page__breadcrumb">Organization</p>
+      @if (org(); as org) {
+        <h1 class="org-page__title">{{ org.name }}</h1>
+        <p class="org-page__subtitle">Aggregated site health based on edge-device availability.</p>
+      } @else if (!loading()) {
+        <h1 class="org-page__title">Organization</h1>
+      }
+    </div>
+    <span class="org-page__updated">Last updated: Just now</span>
+  </div>
+
+  @if (loading()) {
+    <p class="state-text">Loading&hellip;</p>
+  }
+
+  @if (error(); as err) {
+    <div class="state-error"><p>Failed to load data: {{ err }}</p></div>
+  }
+
+  @if (org(); as org) {
+
+    <div class="tile-row">
+      <app-tile title="Total Sites"        [count]="org.totalSites"    type="default" />
+      <app-tile title="Healthy Sites"      [count]="org.healthySites"  type="success" />
+      <app-tile title="Degraded Sites"     [count]="org.degradedSites" type="warning" />
+      <app-tile title="Down Sites"         [count]="org.downSites"     type="danger"  />
+      <app-tile title="Total Edge Devices" [count]="totalDevices()"    type="default" />
+    </div>
+
+    <div class="sites-panel">
+      <h2 class="sites-panel__title">Sites</h2>
+
+      @if (sortedSites().length === 0) {
+        <p class="state-text">No sites found for this organization.</p>
+      } @else {
+        <table class="sites-table">
+          <thead>
+            <tr>
+              <th class="th--sortable"     (click)="sort('name')">
+                Site Name <span class="sort-icon">{{ sortIcon('name') }}</span>
+              </th>
+              <th class="th--sortable th--num" (click)="sort('deviceCount')">
+                Total Edge Devices <span class="sort-icon">{{ sortIcon('deviceCount') }}</span>
+              </th>
+              <th class="th--sortable"     (click)="sort('health')">
+                Status <span class="sort-icon">{{ sortIcon('health') }}</span>
+              </th>
+              <th class="th--sortable th--num" (click)="sort('healthy')">
+                Healthy <span class="sort-icon">{{ sortIcon('healthy') }}</span>
+              </th>
+              <th class="th--sortable th--num" (click)="sort('degraded')">
+                Degraded <span class="sort-icon">{{ sortIcon('degraded') }}</span>
+              </th>
+              <th class="th--sortable th--num" (click)="sort('down')">
+                Down <span class="sort-icon">{{ sortIcon('down') }}</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (site of sortedSites(); track site.id) {
+              <tr>
+                <td>
+                  <a class="site-link"
+                     [routerLink]="['/organizations', site.orgId, 'sites', site.id]">
+                    {{ site.name }}
+                  </a>
+                </td>
+                <td class="td--num">{{ site.deviceCount }}</td>
+                <td>
+                  <span class="badge badge--{{ site.health.toLowerCase() }}">
+                    <span class="badge__dot"></span>{{ site.health }}
+                  </span>
+                </td>
+                <td class="td--num">{{ healthyCount(site) }}</td>
+                <td class="td--num">{{ degradedCount(site) }}</td>
+                <td class="td--num">{{ downCount(site) }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+
+  }
+
+</div>

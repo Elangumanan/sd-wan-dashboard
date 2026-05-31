@@ -1,0 +1,20 @@
+<div
+  class="tile"
+  [class]="tileClasses()"
+  [attr.role]="clickable() ? 'button' : null"
+  [attr.tabindex]="clickable() ? 0 : null"
+  [attr.aria-disabled]="!clickable()"
+  (click)="handleClick()"
+  (keydown.enter)="handleClick()"
+  (keydown.space)="handleClick()">
+
+  <span class="tile__title">{{ title() }}</span>
+
+  <span class="tile__count" [style.color]="labelColor() ?? null">
+    {{ count() }}
+  </span>
+
+  @if (subtitle()) {
+    <span class="tile__subtitle">{{ subtitle() }}</span>
+  }
+</div>
