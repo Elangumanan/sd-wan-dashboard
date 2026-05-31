@@ -1,10 +1,6 @@
 import { Routes } from '@angular/router';
 
-/**
- * Root routes — every feature is lazy-loaded.
- * Feature state (NgRx reducers + effects) is registered inside each
- * feature's own route providers, not here.
- */
+/** Root routes — every feature is lazy-loaded. */
 export const routes: Routes = [
   {
     path: '',

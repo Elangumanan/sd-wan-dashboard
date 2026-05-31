@@ -10,7 +10,7 @@ import { ApiErrorResponse } from '../models/api-response.model';
  * Responsibilities:
  *  - Attach JSON content/accept headers to every outbound request.
  *  - Catch HTTP errors and surface a user-visible toast notification.
- *  - Re-throw the original error so NgRx Effects can also react (e.g. dispatch failure actions).
+ *  - Re-throw the original error so the calling component's error handler can also react.
  */
 export const apiInterceptor: HttpInterceptorFn = (req, next) => {
   const toast = inject(ToastService);
