@@ -1,0 +1,91 @@
+<main class="starter-shell">
+  <section class="hero">
+    <p class="eyebrow">SD-WAN dashboard assignment starter</p>
+    <h1>Minimal starter, assignment-first scope.</h1>
+    <p class="hero__copy">
+      This boilerplate only proves the frontend and backend wiring. The actual dashboard,
+      routing, contracts, aggregation rules, and charts are intentionally left for the assignment.
+    </p>
+    <div class="hero__meta">
+      <span>Angular starter</span>
+      <span>Spring Boot starter</span>
+      <span>{{ today }}</span>
+    </div>
+  </section>
+
+  <section class="grid">
+    <article class="panel">
+      <h2>What You Build</h2>
+      <ul>
+        <li *ngFor="let item of buildItems">{{ item }}</li>
+      </ul>
+    </article>
+
+    <article class="panel">
+      <h2>What Is Already Provided</h2>
+      <ul>
+        <li *ngFor="let item of starterItems">{{ item }}</li>
+      </ul>
+    </article>
+  </section>
+
+  <section class="grid">
+    <article class="panel panel--wide">
+      <h2>Suggested Deliverables</h2>
+      <ul>
+        <li *ngFor="let item of deliverables">{{ item }}</li>
+      </ul>
+    </article>
+
+    <article class="panel" *ngIf="apiStatus$ | async as apiStatus" [class]="apiStatus.className">
+      <h2>Starter API Check</h2>
+      <p class="status-label">{{ apiStatus.label }}</p>
+      <p class="status-detail">{{ apiStatus.detail }}</p>
+      <p class="status-hint">Edit this starter endpoint or replace it with your assignment API once you start building.</p>
+    </article>
+  </section>
+
+  <section class="grid">
+    <article class="panel">
+      <h2>How To Use The References</h2>
+      <ul>
+        <li *ngFor="let item of referenceSteps">{{ item }}</li>
+      </ul>
+    </article>
+
+    <article class="panel">
+      <h2>Reference Intent</h2>
+      <p class="reference-copy">
+        These screenshots come from the completed implementation in <code>finalcode/</code>.
+        They are included to show the expected depth and information density, not to turn the starter
+        back into a partial solution.
+      </p>
+      <p class="reference-copy">
+        A good submission should preserve the same assignment flow and domain rules while still looking
+        like your own work.
+      </p>
+    </article>
+  </section>
+
+  <section class="panel reference-panel">
+    <div class="reference-panel__header">
+      <div>
+        <h2>Final-Code References</h2>
+        <p class="reference-copy">
+          These screenshots come from the completed implementation in <code>finalcode/</code> and are copied into
+          <code>final_dashboard_mock/</code> for the starter. Review the overview, organization, site, and edge screens together.
+        </p>
+      </div>
+    </div>
+
+    <div class="reference-gallery">
+      <article class="reference-card" *ngFor="let screen of referenceScreens">
+        <div class="reference-card__image-wrap">
+          <img class="reference-card__image" [src]="screen.src" [alt]="screen.alt" loading="lazy" />
+        </div>
+        <h3>{{ screen.title }}</h3>
+        <p class="reference-copy">{{ screen.description }}</p>
+      </article>
+    </div>
+  </section>
+</main>
