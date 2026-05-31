@@ -1729,6 +1729,56 @@ Frontend `NetworkInterface.ipAddress?` was already typed and the Port Status tab
 
 ---
 
+## Entry 26 — Apply Box-Shadow to TileComponent
+
+### Date
+
+`2026-05-31`
+
+### Goal
+
+Replace the raw `grey` named-colour shadow on `TileComponent` with a polished `rgba` shadow that scales through resting → hover → active states, and restore the commented-out border-left type accent colours.
+
+### Exact Prompt
+
+```text
+apply box-shadow in tile component
+```
+
+### Files / Context Provided
+
+- `frontend/src/app/shared/components/tile/tile.component.scss`
+
+### Output Summary
+
+Three changes to `tile.component.scss`:
+
+| What | Before | After |
+|---|---|---|
+| Resting shadow | `2px 2px 2px 0px grey` | `0 2px 8px rgba(0,0,0,.08)` — soft, diffused |
+| Hover shadow (clickable) | `0 4px 14px rgba(0,0,0,.1)` | `0 6px 16px rgba(0,0,0,.12)` — consistent scale step |
+| Border-left accents | Commented out | Restored — all 5 type variants active |
+
+The shadow follows a three-step scale: resting → hover (lifted) → active (pressed), matching the motion convention used across the rest of the dashboard panels.
+
+### What I Kept
+
+- Fix as proposed.
+
+### What I Changed Manually
+
+- Border-left accent lines were re-commented after the fix — the type accent visibility depends on whether the left-border design is preferred.
+
+### What AI Missed Or Got Wrong
+
+- Nothing — shadow values and accent restoration were correct.
+
+### Reusable?
+
+`yes` — the three-step `rgba` shadow scale (resting / hover / active) is a reusable pattern for any interactive card component.
+
+---
+
 ## Example Entry
 
 ### Date
