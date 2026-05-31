@@ -1,17 +1,10 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Store } from '@ngrx/store';
+import { forkJoin } from 'rxjs';
+import { OrganizationSummary } from '../../core/models/organization.model';
 import { SiteListItem, SiteHealth } from '../../core/models/site.model';
+import { SdwanApiService } from '../../core/sdwan-api.service';
 import { TileComponent } from '../../shared/components/tile/tile.component';
-import { OrganizationActions } from './store/organization.actions';
-import {
-  selectOrganization,
-  selectOrganizationError,
-  selectOrganizationLoading,
-  selectSites,
-  selectTotalEdgeDevices,
-} from './store/organization.selectors';
 
 export type SortKey = 'name' | 'deviceCount' | 'health' | 'healthy' | 'degraded' | 'down';
 export type SortDir = 'asc' | 'desc';
@@ -26,14 +19,18 @@ const HEALTH_ORDER: Record<SiteHealth, number> = { HEALTHY: 0, DEGRADED: 1, DOWN
   styleUrl: './organization-detail.component.scss',
 })
 export class OrganizationDetailComponent implements OnInit {
-  private readonly store = inject(Store);
+  private readonly api   = inject(SdwanApiService);
   private readonly route = inject(ActivatedRoute);
 
-  protected readonly org          = toSignal(this.store.select(selectOrganization));
-  protected readonly loading      = toSignal(this.store.select(selectOrganizationLoading), { initialValue: false });
-  protected readonly error        = toSignal(this.store.select(selectOrganizationError));
-  protected readonly totalDevices = toSignal(this.store.select(selectTotalEdgeDevices), { initialValue: 0 });
-  private   readonly sites        = toSignal(this.store.select(selectSites), { initialValue: [] as SiteListItem[] });
+  protected readonly org     = signal<OrganizationSummary | null>(null);
+  protected readonly loading = signal(true);
+  protected readonly error   = signal<string | null>(null);
+
+  private readonly sites = signal<SiteListItem[]>([]);
+
+  protected readonly totalDevices = computed(() =>
+    this.sites().reduce((sum, s) => sum + s.deviceCount, 0),
+  );
 
   protected readonly sortKey = signal<SortKey>('name');
   protected readonly sortDir = signal<SortDir>('asc');
@@ -54,8 +51,20 @@ export class OrganizationDetailComponent implements OnInit {
 
   ngOnInit(): void {
     const orgId = this.route.snapshot.params['orgId'] as string;
-    this.store.dispatch(OrganizationActions.loadOrganization({ orgId }));
-    this.store.dispatch(OrganizationActions.loadSites({ orgId }));
+    forkJoin({
+      org:   this.api.getOrganization(orgId),
+      sites: this.api.getSites(orgId),
+    }).subscribe({
+      next: ({ org, sites }) => {
+        this.org.set(org);
+        this.sites.set(sites);
+        this.loading.set(false);
+      },
+      error: (err: unknown) => {
+        this.error.set(err instanceof Error ? err.message : 'Failed to load organization');
+        this.loading.set(false);
+      },
+    });
   }
 
   protected sort(key: SortKey): void {

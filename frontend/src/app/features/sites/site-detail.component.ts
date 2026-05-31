@@ -1,18 +1,8 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Store } from '@ngrx/store';
-import { DeviceSummary } from '../../core/models/site.model';
+import { SiteDetail } from '../../core/models/site.model';
+import { SdwanApiService } from '../../core/sdwan-api.service';
 import { TileComponent } from '../../shared/components/tile/tile.component';
-import { SiteActions } from './store/site.actions';
-import {
-  selectSite,
-  selectSiteDevices,
-  selectSiteError,
-  selectSiteLoading,
-  selectOnlineCount,
-  selectOfflineCount,
-} from './store/site.selectors';
 
 @Component({
   selector: 'app-site-detail',
@@ -22,15 +12,16 @@ import {
   styleUrl: './site-detail.component.scss',
 })
 export class SiteDetailComponent implements OnInit {
-  private readonly store = inject(Store);
+  private readonly api   = inject(SdwanApiService);
   private readonly route = inject(ActivatedRoute);
 
-  protected readonly site         = toSignal(this.store.select(selectSite));
-  protected readonly devices      = toSignal(this.store.select(selectSiteDevices), { initialValue: [] as DeviceSummary[] });
-  protected readonly loading      = toSignal(this.store.select(selectSiteLoading), { initialValue: false });
-  protected readonly error        = toSignal(this.store.select(selectSiteError));
-  protected readonly onlineCount  = toSignal(this.store.select(selectOnlineCount),  { initialValue: 0 });
-  protected readonly offlineCount = toSignal(this.store.select(selectOfflineCount), { initialValue: 0 });
+  protected readonly site         = signal<SiteDetail | null>(null);
+  protected readonly loading      = signal(true);
+  protected readonly error        = signal<string | null>(null);
+
+  protected readonly devices      = computed(() => this.site()?.devices ?? []);
+  protected readonly onlineCount  = computed(() => this.devices().filter(d => d.status === 'ONLINE').length);
+  protected readonly offlineCount = computed(() => this.devices().filter(d => d.status === 'OFFLINE').length);
 
   protected orgId  = '';
   protected siteId = '';
@@ -38,6 +29,16 @@ export class SiteDetailComponent implements OnInit {
   ngOnInit(): void {
     this.orgId  = this.route.snapshot.params['orgId']  as string;
     this.siteId = this.route.snapshot.params['siteId'] as string;
-    this.store.dispatch(SiteActions.loadSite({ orgId: this.orgId, siteId: this.siteId }));
+
+    this.api.getSite(this.orgId, this.siteId).subscribe({
+      next: site => {
+        this.site.set(site);
+        this.loading.set(false);
+      },
+      error: (err: unknown) => {
+        this.error.set(err instanceof Error ? err.message : 'Failed to load site');
+        this.loading.set(false);
+      },
+    });
   }
 }

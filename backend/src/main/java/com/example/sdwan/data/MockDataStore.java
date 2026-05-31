@@ -67,21 +67,21 @@ public class MockDataStore {
 
         for (Device d : List.of(
                 // site-001 — all ONLINE → HEALTHY
-                device("dev-001", "site-001", "NYC-EDGE-01",   "Cisco ISR 4331", DeviceStatus.ONLINE,  DeviceRole.ACTIVE,  "10.1.1.1", "17.12.3", onlineAt),
-                device("dev-002", "site-001", "NYC-EDGE-02",   "Cisco ISR 4331", DeviceStatus.ONLINE,  DeviceRole.STANDBY, "10.1.1.2", "17.12.3", onlineAt),
-                device("dev-003", "site-001", "NYC-CORE-01",   "Cisco ISR 4451", DeviceStatus.ONLINE,  DeviceRole.ACTIVE,  "10.1.1.3", "17.12.3", onlineAt),
+                device("dev-001", "site-001", "NYC-EDGE-01",   "Cisco ISR 4331", DeviceStatus.ONLINE,  DeviceRole.ACTIVE,  "5d 14h 32m",  "10.1.1.1", "17.12.3", onlineAt),
+                device("dev-002", "site-001", "NYC-EDGE-02",   "Cisco ISR 4331", DeviceStatus.ONLINE,  DeviceRole.STANDBY, "5d 14h 28m",  "10.1.1.2", "17.12.3", onlineAt),
+                device("dev-003", "site-001", "NYC-CORE-01",   "Cisco ISR 4451", DeviceStatus.ONLINE,  DeviceRole.ACTIVE,  "12d 3h 15m",  "10.1.1.3", "17.12.3", onlineAt),
                 // site-002 — dev-005 offline → DEGRADED
-                device("dev-004", "site-002", "LAX-EDGE-01",   "Cisco ISR 4331", DeviceStatus.ONLINE,  DeviceRole.ACTIVE,  "10.2.1.1", "17.11.2", onlineAt),
-                device("dev-005", "site-002", "LAX-EDGE-02",   "Cisco ISR 4331", DeviceStatus.OFFLINE, DeviceRole.STANDBY, "10.2.1.2", "17.11.2", offline5h),
-                device("dev-006", "site-002", "LAX-CORE-01",   "Cisco ISR 4451", DeviceStatus.ONLINE,  DeviceRole.ACTIVE,  "10.2.1.3", "17.11.2", onlineAt),
+                device("dev-004", "site-002", "LAX-EDGE-01",   "Cisco ISR 4331", DeviceStatus.ONLINE,  DeviceRole.ACTIVE,  "3d 22h 10m",  "10.2.1.1", "17.11.2", onlineAt),
+                device("dev-005", "site-002", "LAX-EDGE-02",   "Cisco ISR 4331", DeviceStatus.OFFLINE, DeviceRole.STANDBY, "—",           "10.2.1.2", "17.11.2", offline5h),
+                device("dev-006", "site-002", "LAX-CORE-01",   "Cisco ISR 4451", DeviceStatus.ONLINE,  DeviceRole.ACTIVE,  "8d 7h 45m",   "10.2.1.3", "17.11.2", onlineAt),
                 // site-003 — all offline → DOWN
-                device("dev-007", "site-003", "CHI-EDGE-01",   "Cisco ISR 4331", DeviceStatus.OFFLINE, DeviceRole.ACTIVE,  "10.3.1.1", "17.10.1", offline40h),
-                device("dev-008", "site-003", "CHI-CORE-01",   "Cisco ISR 4451", DeviceStatus.OFFLINE, DeviceRole.ACTIVE,  "10.3.1.2", "17.10.1", offline40h),
+                device("dev-007", "site-003", "CHI-EDGE-01",   "Cisco ISR 4331", DeviceStatus.OFFLINE, DeviceRole.ACTIVE,  "—",           "10.3.1.1", "17.10.1", offline40h),
+                device("dev-008", "site-003", "CHI-CORE-01",   "Cisco ISR 4451", DeviceStatus.OFFLINE, DeviceRole.ACTIVE,  "—",           "10.3.1.2", "17.10.1", offline40h),
                 // site-004 — all ONLINE → HEALTHY
-                device("dev-009", "site-004", "SEA-EDGE-01",   "Cisco ISR 4331", DeviceStatus.ONLINE,  DeviceRole.ACTIVE,  "10.4.1.1", "17.12.3", onlineAt),
-                device("dev-010", "site-004", "SEA-EDGE-02",   "Cisco ISR 4331", DeviceStatus.ONLINE,  DeviceRole.STANDBY, "10.4.1.2", "17.12.3", onlineAt),
-                device("dev-011", "site-004", "SEA-CORE-01",   "Cisco ISR 4451", DeviceStatus.ONLINE,  DeviceRole.ACTIVE,  "10.4.1.3", "17.12.3", onlineAt),
-                device("dev-012", "site-004", "SEA-BACKUP-01", "Cisco ISR 4331", DeviceStatus.ONLINE,  DeviceRole.STANDBY, "10.4.1.4", "17.12.3", onlineAt)
+                device("dev-009", "site-004", "SEA-EDGE-01",   "Cisco ISR 4331", DeviceStatus.ONLINE,  DeviceRole.ACTIVE,  "15d 2h 18m",  "10.4.1.1", "17.12.3", onlineAt),
+                device("dev-010", "site-004", "SEA-EDGE-02",   "Cisco ISR 4331", DeviceStatus.ONLINE,  DeviceRole.STANDBY, "15d 2h 05m",  "10.4.1.2", "17.12.3", onlineAt),
+                device("dev-011", "site-004", "SEA-CORE-01",   "Cisco ISR 4451", DeviceStatus.ONLINE,  DeviceRole.ACTIVE,  "22d 11h 30m", "10.4.1.3", "17.12.3", onlineAt),
+                device("dev-012", "site-004", "SEA-BACKUP-01", "Cisco ISR 4331", DeviceStatus.ONLINE,  DeviceRole.STANDBY, "7d 19h 42m",  "10.4.1.4", "17.12.3", onlineAt)
         )) {
             devices.put(d.id(), d);
         }
@@ -94,50 +94,50 @@ public class MockDataStore {
         // Offline devices: all interfaces DOWN
 
         // site-001
-        wanIface("iface-dev001-wan0", "dev-001", "GigabitEthernet0/0/0", InterfaceStatus.UP,   1_000);
-        lanIface("iface-dev001-lan0", "dev-001", "GigabitEthernet0/1/0", InterfaceStatus.UP,   1_000,  85.0,  32.0);
+        wanIface("iface-dev001-wan0", "dev-001", "GigabitEthernet0/0/0", InterfaceStatus.UP,   "100.68.1.1",  1_000);
+        lanIface("iface-dev001-lan0", "dev-001", "GigabitEthernet0/1/0", InterfaceStatus.UP,   "192.168.1.1/24", 1_000,  85.0,  32.0);
 
-        wanIface("iface-dev002-wan0", "dev-002", "GigabitEthernet0/0/0", InterfaceStatus.UP,   1_000);
-        lanIface("iface-dev002-lan0", "dev-002", "GigabitEthernet0/1/0", InterfaceStatus.UP,   1_000,  76.0,  28.0);
+        wanIface("iface-dev002-wan0", "dev-002", "GigabitEthernet0/0/0", InterfaceStatus.UP,   "100.68.1.2",  1_000);
+        lanIface("iface-dev002-lan0", "dev-002", "GigabitEthernet0/1/0", InterfaceStatus.UP,   "192.168.1.2/24", 1_000,  76.0,  28.0);
 
-        wanIface("iface-dev003-wan0", "dev-003", "GigabitEthernet0/0/0", InterfaceStatus.UP,  10_000);
-        wanIface("iface-dev003-wan1", "dev-003", "GigabitEthernet0/0/1", InterfaceStatus.UP,  10_000);
-        lanIface("iface-dev003-lan0", "dev-003", "GigabitEthernet0/1/0", InterfaceStatus.UP,  10_000, 320.0, 110.0);
+        wanIface("iface-dev003-wan0", "dev-003", "GigabitEthernet0/0/0", InterfaceStatus.UP,   "100.68.1.3", 10_000);
+        wanIface("iface-dev003-wan1", "dev-003", "GigabitEthernet0/0/1", InterfaceStatus.UP,   "100.68.1.4", 10_000);
+        lanIface("iface-dev003-lan0", "dev-003", "GigabitEthernet0/1/0", InterfaceStatus.UP,   "192.168.1.3/24", 10_000, 320.0, 110.0);
 
         // site-002
-        wanIface("iface-dev004-wan0", "dev-004", "GigabitEthernet0/0/0", InterfaceStatus.UP,   1_000);
-        lanIface("iface-dev004-lan0", "dev-004", "GigabitEthernet0/1/0", InterfaceStatus.UP,   1_000,  92.0,  38.0);
+        wanIface("iface-dev004-wan0", "dev-004", "GigabitEthernet0/0/0", InterfaceStatus.UP,   "100.68.2.1",  1_000);
+        lanIface("iface-dev004-lan0", "dev-004", "GigabitEthernet0/1/0", InterfaceStatus.UP,   "192.168.2.1/24", 1_000,  92.0,  38.0);
 
-        wanIface("iface-dev005-wan0", "dev-005", "GigabitEthernet0/0/0", InterfaceStatus.DOWN,  1_000);
-        lanIface("iface-dev005-lan0", "dev-005", "GigabitEthernet0/1/0", InterfaceStatus.DOWN,  1_000,   0.0,   0.0);
+        wanIface("iface-dev005-wan0", "dev-005", "GigabitEthernet0/0/0", InterfaceStatus.DOWN, "100.68.2.2",  1_000);
+        lanIface("iface-dev005-lan0", "dev-005", "GigabitEthernet0/1/0", InterfaceStatus.DOWN, "192.168.2.2/24", 1_000,   0.0,   0.0);
 
-        wanIface("iface-dev006-wan0", "dev-006", "GigabitEthernet0/0/0", InterfaceStatus.UP,  10_000);
-        wanIface("iface-dev006-wan1", "dev-006", "GigabitEthernet0/0/1", InterfaceStatus.UP,  10_000);
-        lanIface("iface-dev006-lan0", "dev-006", "GigabitEthernet0/1/0", InterfaceStatus.UP,  10_000, 280.0,  95.0);
+        wanIface("iface-dev006-wan0", "dev-006", "GigabitEthernet0/0/0", InterfaceStatus.UP,   "100.68.2.3", 10_000);
+        wanIface("iface-dev006-wan1", "dev-006", "GigabitEthernet0/0/1", InterfaceStatus.UP,   "100.68.2.4", 10_000);
+        lanIface("iface-dev006-lan0", "dev-006", "GigabitEthernet0/1/0", InterfaceStatus.UP,   "192.168.2.3/24", 10_000, 280.0,  95.0);
 
         // site-003 (all DOWN)
-        wanIface("iface-dev007-wan0", "dev-007", "GigabitEthernet0/0/0", InterfaceStatus.DOWN,  1_000);
-        lanIface("iface-dev007-lan0", "dev-007", "GigabitEthernet0/1/0", InterfaceStatus.DOWN,  1_000,   0.0,   0.0);
+        wanIface("iface-dev007-wan0", "dev-007", "GigabitEthernet0/0/0", InterfaceStatus.DOWN, "100.68.3.1",  1_000);
+        lanIface("iface-dev007-lan0", "dev-007", "GigabitEthernet0/1/0", InterfaceStatus.DOWN, "192.168.3.1/24", 1_000,   0.0,   0.0);
 
-        wanIface("iface-dev008-wan0", "dev-008", "GigabitEthernet0/0/0", InterfaceStatus.DOWN, 10_000);
-        wanIface("iface-dev008-wan1", "dev-008", "GigabitEthernet0/0/1", InterfaceStatus.DOWN, 10_000);
-        lanIface("iface-dev008-lan0", "dev-008", "GigabitEthernet0/1/0", InterfaceStatus.DOWN, 10_000,   0.0,   0.0);
+        wanIface("iface-dev008-wan0", "dev-008", "GigabitEthernet0/0/0", InterfaceStatus.DOWN, "100.68.3.2", 10_000);
+        wanIface("iface-dev008-wan1", "dev-008", "GigabitEthernet0/0/1", InterfaceStatus.DOWN, "100.68.3.3", 10_000);
+        lanIface("iface-dev008-lan0", "dev-008", "GigabitEthernet0/1/0", InterfaceStatus.DOWN, "192.168.3.2/24", 10_000,   0.0,   0.0);
 
         // site-004
-        wanIface("iface-dev009-wan0", "dev-009", "GigabitEthernet0/0/0", InterfaceStatus.UP,   1_000);
-        wanIface("iface-dev009-wan1", "dev-009", "GigabitEthernet0/0/1", InterfaceStatus.UP,   1_000);
-        lanIface("iface-dev009-lan0", "dev-009", "GigabitEthernet0/1/0", InterfaceStatus.UP,   1_000, 105.0,  44.0);
+        wanIface("iface-dev009-wan0", "dev-009", "GigabitEthernet0/0/0", InterfaceStatus.UP,   "100.68.4.1",  1_000);
+        wanIface("iface-dev009-wan1", "dev-009", "GigabitEthernet0/0/1", InterfaceStatus.UP,   "100.68.4.2",  1_000);
+        lanIface("iface-dev009-lan0", "dev-009", "GigabitEthernet0/1/0", InterfaceStatus.UP,   "192.168.4.1/24", 1_000, 105.0,  44.0);
 
-        wanIface("iface-dev010-wan0", "dev-010", "GigabitEthernet0/0/0", InterfaceStatus.UP,   1_000);
-        wanIface("iface-dev010-wan1", "dev-010", "GigabitEthernet0/0/1", InterfaceStatus.UP,   1_000);
-        lanIface("iface-dev010-lan0", "dev-010", "GigabitEthernet0/1/0", InterfaceStatus.UP,   1_000,  98.0,  40.0);
+        wanIface("iface-dev010-wan0", "dev-010", "GigabitEthernet0/0/0", InterfaceStatus.UP,   "100.68.4.3",  1_000);
+        wanIface("iface-dev010-wan1", "dev-010", "GigabitEthernet0/0/1", InterfaceStatus.UP,   "100.68.4.4",  1_000);
+        lanIface("iface-dev010-lan0", "dev-010", "GigabitEthernet0/1/0", InterfaceStatus.UP,   "192.168.4.2/24", 1_000,  98.0,  40.0);
 
-        wanIface("iface-dev011-wan0", "dev-011", "GigabitEthernet0/0/0", InterfaceStatus.UP,  10_000);
-        wanIface("iface-dev011-wan1", "dev-011", "GigabitEthernet0/0/1", InterfaceStatus.UP,  10_000);
-        lanIface("iface-dev011-lan0", "dev-011", "GigabitEthernet0/1/0", InterfaceStatus.UP,  10_000, 410.0, 140.0);
+        wanIface("iface-dev011-wan0", "dev-011", "GigabitEthernet0/0/0", InterfaceStatus.UP,   "100.68.4.5", 10_000);
+        wanIface("iface-dev011-wan1", "dev-011", "GigabitEthernet0/0/1", InterfaceStatus.UP,   "100.68.4.6", 10_000);
+        lanIface("iface-dev011-lan0", "dev-011", "GigabitEthernet0/1/0", InterfaceStatus.UP,   "192.168.4.3/24", 10_000, 410.0, 140.0);
 
-        wanIface("iface-dev012-wan0", "dev-012", "GigabitEthernet0/0/0", InterfaceStatus.UP,   1_000);
-        lanIface("iface-dev012-lan0", "dev-012", "GigabitEthernet0/1/0", InterfaceStatus.UP,   1_000,  55.0,  20.0);
+        wanIface("iface-dev012-wan0", "dev-012", "GigabitEthernet0/0/0", InterfaceStatus.UP,   "100.68.4.7",  1_000);
+        lanIface("iface-dev012-lan0", "dev-012", "GigabitEthernet0/1/0", InterfaceStatus.UP,   "192.168.4.4/24", 1_000,  55.0,  20.0);
     }
 
     /**
@@ -224,13 +224,14 @@ public class MockDataStore {
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
-    private void wanIface(String id, String deviceId, String name, InterfaceStatus status, long speedMbps) {
-        interfaces.put(id, new NetworkInterface(id, deviceId, name, InterfaceType.WAN, status, speedMbps));
+    private void wanIface(String id, String deviceId, String name, InterfaceStatus status,
+                          String ipAddress, long speedMbps) {
+        interfaces.put(id, new NetworkInterface(id, deviceId, name, InterfaceType.WAN, status, ipAddress, speedMbps));
     }
 
-    private void lanIface(String id, String deviceId, String name, InterfaceStatus status, long speedMbps,
-                          double currentRx, double currentTx) {
-        interfaces.put(id, new NetworkInterface(id, deviceId, name, InterfaceType.LAN, status, speedMbps));
+    private void lanIface(String id, String deviceId, String name, InterfaceStatus status,
+                          String ipAddress, long speedMbps, double currentRx, double currentTx) {
+        interfaces.put(id, new NetworkInterface(id, deviceId, name, InterfaceType.LAN, status, ipAddress, speedMbps));
         lanCurrentTraffic.put(id, new double[]{currentRx, currentTx});
     }
     private static Site site(String id, String orgId, String name, String location) {
@@ -238,9 +239,9 @@ public class MockDataStore {
     }
 
     private static Device device(String id, String siteId, String name, String model,
-                                  DeviceStatus status, DeviceRole role, String ip,
-                                  String firmware, Instant lastSeen) {
-        return new Device(id, siteId, name, model, status, role, ip, firmware, lastSeen);
+                                  DeviceStatus status, DeviceRole role, String uptime,
+                                  String ip, String firmware, Instant lastSeen) {
+        return new Device(id, siteId, name, model, status, role, uptime, ip, firmware, lastSeen);
     }
 
     private static double round2(double v) {

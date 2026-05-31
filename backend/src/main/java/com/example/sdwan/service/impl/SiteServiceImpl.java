@@ -74,7 +74,7 @@ public class SiteServiceImpl implements SiteService {
     }
 
     private DeviceSummaryDto toDeviceSummary(Device d) {
-        return new DeviceSummaryDto(d.id(), d.siteId(), d.name(), d.model(), d.status(), d.role(), d.ipAddress());
+        return new DeviceSummaryDto(d.id(), d.siteId(), d.name(), d.model(), d.status(), d.role(), d.uptime(), d.ipAddress());
     }
 
     private void verifyOrgExists(String orgId) {

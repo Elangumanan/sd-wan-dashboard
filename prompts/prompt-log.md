@@ -1531,6 +1531,204 @@ Removed 5 nav links from the sidebar (`Sites`, `Edge Devices`, `Alerts`, `Report
 
 ---
 
+## Entry 23 — Remove NgRx State Management
+
+### Date
+
+`2026-05-31`
+
+### Goal
+
+Remove all NgRx state management dependencies and implementation code from the Angular frontend, replacing store/effects/selectors with direct service calls and Angular Signals.
+
+### Exact Prompt
+
+```text
+Analyze the application and remove all state management dependencies and related
+implementation code.
+```
+
+### Files / Context Provided
+
+- `frontend/package.json`
+- `frontend/src/app/app.config.ts`
+- `frontend/src/app/features/dashboard/dashboard.component.ts`
+- `frontend/src/app/features/dashboard/dashboard.routes.ts`
+- `frontend/src/app/features/organizations/organization-detail.component.ts`
+- `frontend/src/app/features/organizations/organizations.routes.ts`
+- `frontend/src/app/features/sites/site-detail.component.ts`
+- `frontend/src/app/features/devices/device-detail.component.ts`
+
+### Output Summary
+
+AI audited all NgRx usage and removed it end-to-end across 17 deleted files and 8 updated files:
+
+**Deleted (17 files):**
+- All 4 feature `store/` directories (`dashboard`, `organizations`, `sites`, `devices`) — actions, reducers, selectors, effects
+- `store/app.state.ts`
+
+**Updated:**
+- `package.json` — removed `@ngrx/store`, `@ngrx/effects`, `@ngrx/store-devtools`
+- `app.config.ts` — removed `provideStore`, `provideEffects`, `provideStoreDevtools`
+- `dashboard.routes.ts` / `organizations.routes.ts` — plain `loadComponent` routes, all `provideState`/`provideEffects` providers removed
+- `dashboard.component.ts` — `Store` → `SdwanApiService`; `toSignal(store.select(...))` → `signal()`; dispatch calls → `forkJoin`; NgRx selectors inlined as `computed()`
+- `organization-detail.component.ts` — same pattern; `totalDevices` selector → `computed()` from the sites signal
+- `site-detail.component.ts` — `Store` → `SdwanApiService`; `devices`/`onlineCount`/`offlineCount` selectors → `computed()` derived from the `site` signal
+- `device-detail.component.ts` — `Store` → direct API calls; `onRangeChange` dispatch → `fetchWanHistory()` private helper; `wanInterfaces`/`lanInterfaces` selectors → `computed()`
+
+Post-refactor grep confirmed zero NgRx references remain in the codebase.
+
+### What I Kept
+
+- Full changes as proposed
+- `computed()` for all derived state — reactive, no extra subscriptions, replaces NgRx selectors cleanly
+- `forkJoin` for parallel API calls (dashboard overview + site health snapshot, org + sites)
+- `fetchWanHistory()` private helper in device component — replaces the effect pattern with a direct, readable method
+
+### What I Changed Manually
+
+- None
+
+### What AI Missed Or Got Wrong
+
+- Nothing — all NgRx references were removed cleanly and the replacement signal pattern preserves identical behaviour.
+
+### Reusable?
+
+`yes` — the pattern (`signal()` for state + `computed()` for derived data + direct service calls + `forkJoin` for parallel requests) is a clean, dependency-free alternative to NgRx for any Angular 17 application where full flux architecture is not required.
+
+---
+
+## Entry 24 — Implement Device Uptime End-to-End
+
+### Date
+
+`2026-05-31`
+
+### Goal
+
+Add `uptime` as a String field to the backend device layer — domain class, DTOs, MockDataStore seeding, and service mappers — following the same pattern used for `deviceRole`.
+
+### Exact Prompt
+
+```text
+Add Device Uptime Support
+
+Implement device uptime support across the backend. Add a new uptime field to Device.java
+(example value: "5d 14h 32m"). Propagate this field through all relevant DTOs, mappers,
+service layers, and API responses so it is available end-to-end. Follow the same
+implementation pattern currently used for deviceRole to maintain consistency with the
+existing codebase. Update MockDataStore to seed realistic uptime values for all devices.
+Ensure the application compiles successfully and that the new field is consistently exposed
+wherever device information is returned.
+```
+
+### Files / Context Provided
+
+- `backend/src/main/java/com/example/sdwan/domain/Device.java`
+- `backend/src/main/java/com/example/sdwan/dto/DeviceSummaryDto.java`
+- `backend/src/main/java/com/example/sdwan/dto/DeviceDetailDto.java`
+- `backend/src/main/java/com/example/sdwan/data/MockDataStore.java`
+- `backend/src/main/java/com/example/sdwan/service/impl/SiteServiceImpl.java`
+- `backend/src/main/java/com/example/sdwan/service/impl/DeviceServiceImpl.java`
+
+### Output Summary
+
+Added `uptime: String` across 6 backend files following the exact `deviceRole` pattern:
+
+- `Device.java` — field, constructor param (between `role` and `ipAddress`), accessor, equals/hashCode/toString
+- `DeviceSummaryDto.java` — same addition, exposed in site-detail device list
+- `DeviceDetailDto.java` — same addition, exposed in device-detail API
+- `MockDataStore.java` — `device()` helper extended with `uptime` param; 12 devices seeded with realistic values (online devices: e.g. `"5d 14h 32m"`, `"22d 11h 30m"`; offline devices: `"—"`)
+- `SiteServiceImpl.toDeviceSummary()` — passes `d.uptime()`
+- `DeviceServiceImpl.getDeviceById()` — passes `device.uptime()`
+
+Frontend `DeviceDetail.uptime?` was already typed as `string?`; the Uptime tile template uses `d.uptime ?? '—'` and will display correctly once the backend restarts.
+
+### What I Kept
+
+- Full implementation as proposed
+- `"—"` for offline devices — semantically correct (uptime is undefined when device is down)
+- Field position consistent with `role` ordering in constructor and equals/hashCode
+
+### What I Changed Manually
+
+- None
+
+### What AI Missed Or Got Wrong
+
+- Nothing — identical pattern to `deviceRole` applied cleanly.
+
+### Reusable?
+
+`yes` — the checklist (domain field → DTO field → MockDataStore seed + helper param → service mapper) is the standard pattern for adding any new plain-type field to this backend.
+
+---
+
+## Entry 25 — Add Network Interface IP Address End-to-End
+
+### Date
+
+`2026-05-31`
+
+### Goal
+
+Add `ipAddress` to `NetworkInterface.java` and `InterfaceDto.java`, propagate through the mapper and API response, and seed realistic IP values for all 20 interfaces in `MockDataStore`.
+
+### Exact Prompt
+
+```text
+Add Network Interface IP Address Support
+
+Implement IP address support for network interfaces. Add a new ipAddress field to both
+NetworkInterface.java and InterfaceDto.java, and update all related mappers, services,
+and API response models to propagate the field end-to-end. Seed realistic IP addresses
+in MockDataStore, using values similar to those shown in the UI mockups, such as
+100.68.1.1, 192.168.x.x, and other valid private/internal network IP ranges. Follow
+existing project conventions and patterns, keep API responses consistent, and verify
+that the project builds and runs successfully after the changes.
+```
+
+### Files / Context Provided
+
+- `backend/src/main/java/com/example/sdwan/domain/NetworkInterface.java`
+- `backend/src/main/java/com/example/sdwan/dto/InterfaceDto.java`
+- `backend/src/main/java/com/example/sdwan/data/MockDataStore.java` (seedInterfaces + helpers)
+- `backend/src/main/java/com/example/sdwan/service/impl/DeviceServiceImpl.java` (toInterfaceDto)
+
+### Output Summary
+
+Added `ipAddress: String` across 4 backend files following the same pattern as `uptime` and `role`:
+
+- `NetworkInterface.java` — field added between `status` and `speedMbps`; constructor, accessor, equals/hashCode/toString updated
+- `InterfaceDto.java` — field added after `status`; same structural changes
+- `MockDataStore.java` — `wanIface()` and `lanIface()` helpers updated with `ipAddress` param; all 20 interface calls seeded:
+  - WAN: `100.68.{site}.{n}` (e.g. `100.68.1.1`, matching mockup hint)
+  - LAN: `192.168.{site}.{n}/24` (e.g. `192.168.1.1/24`)
+- `DeviceServiceImpl.toInterfaceDto()` — passes `iface.ipAddress()`
+
+Frontend `NetworkInterface.ipAddress?` was already typed and the Port Status table uses `iface.ipAddress ?? '—'`; will display correctly once backend restarts.
+
+### What I Kept
+
+- Full implementation as proposed
+- IP scheme: `100.68.x.x` for WAN (matches the mockup value of `100.68.1.1`), `192.168.x.x/24` CIDR notation for LAN
+- Offline interfaces retain IP addresses — the interface is configured even when down
+
+### What I Changed Manually
+
+- None
+
+### What AI Missed Or Got Wrong
+
+- Nothing — same pattern as `uptime` applied cleanly.
+
+### Reusable?
+
+`yes` — same 4-file checklist (domain → DTO → MockDataStore helper + seed calls → service mapper) applies to any new field on `NetworkInterface`.
+
+---
+
 ## Example Entry
 
 ### Date

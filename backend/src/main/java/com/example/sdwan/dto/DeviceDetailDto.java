@@ -14,14 +14,15 @@ public final class DeviceDetailDto {
     private final String             model;
     private final DeviceStatus       status;
     private final DeviceRole         role;
+    private final String             uptime;
     private final String             ipAddress;
     private final String             firmwareVersion;
     private final String             lastSeen;
     private final List<InterfaceDto> interfaces;
 
     public DeviceDetailDto(String id, String siteId, String name, String model,
-                            DeviceStatus status, DeviceRole role, String ipAddress,
-                            String firmwareVersion, String lastSeen,
+                            DeviceStatus status, DeviceRole role, String uptime,
+                            String ipAddress, String firmwareVersion, String lastSeen,
                             List<InterfaceDto> interfaces) {
         this.id              = Objects.requireNonNull(id,              "id");
         this.siteId          = Objects.requireNonNull(siteId,          "siteId");
@@ -29,6 +30,7 @@ public final class DeviceDetailDto {
         this.model           = Objects.requireNonNull(model,           "model");
         this.status          = Objects.requireNonNull(status,          "status");
         this.role            = Objects.requireNonNull(role,            "role");
+        this.uptime          = Objects.requireNonNull(uptime,          "uptime");
         this.ipAddress       = Objects.requireNonNull(ipAddress,       "ipAddress");
         this.firmwareVersion = Objects.requireNonNull(firmwareVersion, "firmwareVersion");
         this.lastSeen        = Objects.requireNonNull(lastSeen,        "lastSeen");
@@ -41,6 +43,7 @@ public final class DeviceDetailDto {
     public String             model()           { return model; }
     public DeviceStatus       status()          { return status; }
     public DeviceRole         role()            { return role; }
+    public String             uptime()          { return uptime; }
     public String             ipAddress()       { return ipAddress; }
     public String             firmwareVersion() { return firmwareVersion; }
     public String             lastSeen()        { return lastSeen; }
@@ -56,6 +59,7 @@ public final class DeviceDetailDto {
             && Objects.equals(model, other.model)
             && status == other.status
             && role   == other.role
+            && Objects.equals(uptime, other.uptime)
             && Objects.equals(ipAddress, other.ipAddress)
             && Objects.equals(firmwareVersion, other.firmwareVersion)
             && Objects.equals(lastSeen, other.lastSeen)
@@ -64,12 +68,12 @@ public final class DeviceDetailDto {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, siteId, name, model, status, role, ipAddress, firmwareVersion, lastSeen, interfaces);
+        return Objects.hash(id, siteId, name, model, status, role, uptime, ipAddress, firmwareVersion, lastSeen, interfaces);
     }
 
     @Override
     public String toString() {
         return "DeviceDetailDto[id=" + id + ", name=" + name + ", status=" + status
-            + ", role=" + role + ", interfaces=" + interfaces.size() + "]";
+            + ", role=" + role + ", uptime=" + uptime + ", interfaces=" + interfaces.size() + "]";
     }
 }

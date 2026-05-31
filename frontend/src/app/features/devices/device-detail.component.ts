@@ -7,11 +7,10 @@ import {
   inject,
   OnDestroy,
   OnInit,
+  signal,
   ViewChild,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Store } from '@ngrx/store';
 import {
   CategoryScale,
   Chart,
@@ -24,21 +23,10 @@ import {
   PointElement,
   Tooltip,
 } from 'chart.js';
-import { NetworkInterface, WanHistory, WanHistoryRange } from '../../core/models/device.model';
+import { DeviceDetail, NetworkInterface, WanHistory, WanHistoryRange } from '../../core/models/device.model';
 import { SdwanApiService } from '../../core/sdwan-api.service';
 import { CardComponent } from '../../shared/components/card/card.component';
 import { TileComponent, TileType } from '../../shared/components/tile/tile.component';
-import { DeviceActions } from './store/device.actions';
-import {
-  selectDevice,
-  selectDeviceError,
-  selectDeviceLoading,
-  selectHistoryLoading,
-  selectLanInterfaces,
-  selectSelectedRange,
-  selectWanHistory,
-  selectWanInterfaces,
-} from './store/device.selectors';
 
 Chart.register(CategoryScale, LinearScale, LineController, LineElement, PointElement, Filler, Tooltip, Legend);
 
@@ -59,19 +47,23 @@ const LINE_COLORS = ['#2563eb', '#16a34a', '#d97706', '#dc2626'];
   styleUrl: './device-detail.component.scss',
 })
 export class DeviceDetailComponent implements OnInit, AfterViewInit, OnDestroy {
-  private readonly store  = inject(Store);
+  private readonly api    = inject(SdwanApiService);
   private readonly route  = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly api    = inject(SdwanApiService);
 
-  protected readonly device         = toSignal(this.store.select(selectDevice));
-  protected readonly wanHistory     = toSignal(this.store.select(selectWanHistory));
-  protected readonly selectedRange  = toSignal(this.store.select(selectSelectedRange), { initialValue: '6h' as WanHistoryRange });
-  protected readonly wanInterfaces  = toSignal(this.store.select(selectWanInterfaces),  { initialValue: [] as NetworkInterface[] });
-  protected readonly lanInterfaces  = toSignal(this.store.select(selectLanInterfaces),  { initialValue: [] as NetworkInterface[] });
-  protected readonly loading        = toSignal(this.store.select(selectDeviceLoading),  { initialValue: false });
-  protected readonly historyLoading = toSignal(this.store.select(selectHistoryLoading), { initialValue: false });
-  protected readonly error          = toSignal(this.store.select(selectDeviceError));
+  protected readonly device         = signal<DeviceDetail | null>(null);
+  protected readonly wanHistory     = signal<WanHistory | null>(null);
+  protected readonly selectedRange  = signal<WanHistoryRange>('6h');
+  protected readonly loading        = signal(true);
+  protected readonly historyLoading = signal(false);
+  protected readonly error          = signal<string | null>(null);
+
+  protected readonly wanInterfaces = computed(() =>
+    this.device()?.interfaces.filter(i => i.type === 'WAN') ?? [] as NetworkInterface[],
+  );
+  protected readonly lanInterfaces = computed(() =>
+    this.device()?.interfaces.filter(i => i.type === 'LAN') ?? [] as NetworkInterface[],
+  );
 
   protected readonly wanStats = computed<WanStat[]>(() => {
     const h = this.wanHistory();
@@ -112,12 +104,22 @@ export class DeviceDetailComponent implements OnInit, AfterViewInit, OnDestroy {
     this.siteId   = this.route.snapshot.params['siteId']   as string;
     this.deviceId = this.route.snapshot.params['deviceId'] as string;
 
-    this.store.dispatch(DeviceActions.loadDevice({ orgId: this.orgId, siteId: this.siteId, deviceId: this.deviceId }));
-    this.store.dispatch(DeviceActions.loadWanHistory({ orgId: this.orgId, siteId: this.siteId, deviceId: this.deviceId, range: '6h' }));
+    this.api.getDevice(this.orgId, this.siteId, this.deviceId).subscribe({
+      next: device => {
+        this.device.set(device);
+        this.loading.set(false);
+      },
+      error: (err: unknown) => {
+        this.error.set(err instanceof Error ? err.message : 'Failed to load device');
+        this.loading.set(false);
+      },
+    });
+
+    this.fetchWanHistory('6h');
 
     this.api.getSite(this.orgId, this.siteId).subscribe({
-      next:  s     => { this.siteName = s.name; },
-      error: ()    => { this.siteName = this.siteId; },
+      next:  s  => { this.siteName = s.name; },
+      error: () => { this.siteName = this.siteId; },
     });
   }
 
@@ -134,9 +136,8 @@ export class DeviceDetailComponent implements OnInit, AfterViewInit, OnDestroy {
 
   protected onRangeChange(event: Event): void {
     const range = (event.target as HTMLSelectElement).value as WanHistoryRange;
-    this.store.dispatch(DeviceActions.loadWanHistory({
-      orgId: this.orgId, siteId: this.siteId, deviceId: this.deviceId, range,
-    }));
+    this.selectedRange.set(range);
+    this.fetchWanHistory(range);
   }
 
   protected interfaceStatus(iface: NetworkInterface): string {
@@ -151,6 +152,17 @@ export class DeviceDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   protected wanTileType(index: number): TileType {
     const types: TileType[] = ['info', 'success', 'warning', 'danger'];
     return types[index] ?? 'default';
+  }
+
+  private fetchWanHistory(range: WanHistoryRange): void {
+    this.historyLoading.set(true);
+    this.api.getWanHistory(this.orgId, this.siteId, this.deviceId, range).subscribe({
+      next: history => {
+        this.wanHistory.set(history);
+        this.historyLoading.set(false);
+      },
+      error: () => this.historyLoading.set(false),
+    });
   }
 
   private buildChart(history: WanHistory): void {
@@ -218,10 +230,8 @@ export class DeviceDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private fmtTs(ts: number): string {
-    const ms   = ts > 1e10 ? ts : ts * 1000;
-    const d    = new Date(ms);
-    const hh   = d.getHours().toString().padStart(2, '0');
-    const mm   = d.getMinutes().toString().padStart(2, '0');
-    return `${hh}:${mm}`;
+    const ms = ts > 1e10 ? ts : ts * 1000;
+    const d  = new Date(ms);
+    return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
   }
 }

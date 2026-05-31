@@ -56,8 +56,8 @@ public class DeviceServiceImpl implements DeviceService {
                 .toList();
         return new DeviceDetailDto(
                 device.id(), device.siteId(), device.name(), device.model(),
-                device.status(), device.role(), device.ipAddress(), device.firmwareVersion(),
-                device.lastSeen().toString(),
+                device.status(), device.role(), device.uptime(), device.ipAddress(),
+                device.firmwareVersion(), device.lastSeen().toString(),
                 interfaces
         );
     }
@@ -88,6 +88,7 @@ public class DeviceServiceImpl implements DeviceService {
         return new InterfaceDto(
                 iface.id(), iface.name(), iface.type(),
                 iface.status().name(),
+                iface.ipAddress(),
                 iface.speedMbps(),
                 store.getCurrentRx(iface.id()),
                 store.getCurrentTx(iface.id())
