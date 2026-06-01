@@ -113,6 +113,7 @@ class SiteServiceTest {
     // ── helper ───────────────────────────────────────────────────────────────
 
     private Device device(String id, DeviceStatus status) {
-        return new Device(id, "site-001", id, "Model", status, "10.0.0.1", "v1", Instant.now());
+        return new Device(id, "site-001", id, "vEdge Cloud", status, DeviceRole.ACTIVE,
+                "5d 14h", "10.0.0.1", "17.12.3", Instant.now());
     }
 }

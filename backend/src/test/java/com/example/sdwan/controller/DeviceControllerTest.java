@@ -1,5 +1,6 @@
 package com.example.sdwan.controller;
 
+import com.example.sdwan.domain.DeviceRole;
 import com.example.sdwan.domain.DeviceStatus;
 import com.example.sdwan.dto.DeviceDetailDto;
 import com.example.sdwan.dto.WanHistoryDto;
@@ -30,13 +31,14 @@ class DeviceControllerTest {
 
     @Test
     void getDevice_returns200WithWrappedDto() throws Exception {
-        var dto = new DeviceDetailDto("dev-001", "site-001", "NYC-EDGE-01", "Cisco ISR 4331",
-                DeviceStatus.ONLINE, "10.1.1.1", "17.12.3", "2026-05-31T00:00:00Z", List.of());
+        var dto = new DeviceDetailDto("dev-001", "site-001", "MUM-EDGE-01", "vEdge Cloud",
+                DeviceStatus.ONLINE, DeviceRole.ACTIVE, "5d 14h 32m", "10.1.1.1", "17.12.3",
+                "2026-05-31T00:00:00Z", List.of());
         when(deviceService.getDeviceById("org-001", "site-001", "dev-001")).thenReturn(dto);
 
         mockMvc.perform(get(BASE))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.value.name").value("NYC-EDGE-01"))
+                .andExpect(jsonPath("$.value.name").value("MUM-EDGE-01"))
                 .andExpect(jsonPath("$.value.status").value("ONLINE"));
     }
 
@@ -52,7 +54,7 @@ class DeviceControllerTest {
 
     @Test
     void getWanHistory_returns200WithWrappedDto() throws Exception {
-        var dto = new WanHistoryDto("dev-001", "NYC-EDGE-01", "24h", List.of());
+        var dto = new WanHistoryDto("dev-001", "MUM-EDGE-01", "24h", List.of());
         when(deviceService.getWanHistory("org-001", "site-001", "dev-001", "24h")).thenReturn(dto);
 
         mockMvc.perform(get(BASE + "/wan-history"))

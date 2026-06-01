@@ -157,6 +157,6 @@ class DashboardServiceTest {
     }
 
     private static Device device(String id, String siteId, DeviceStatus status) {
-        return new Device(id, siteId, id, "Model", status, "10.0.0.1", "v1", Instant.now());
+        return new Device(id, siteId, id, "Model", status, DeviceRole.ACTIVE, "0d 0h 0m", "10.0.0.1", "v1", Instant.now());
     }
 }

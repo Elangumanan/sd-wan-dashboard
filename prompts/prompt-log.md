@@ -1779,6 +1779,67 @@ The shadow follows a three-step scale: resting → hover (lifted) → active (pr
 
 ---
 
+## Entry 27 — Rename Mock Sites to Match Reference Mockup (Indian Cities)
+
+### Date
+
+`2026-06-01`
+
+### Goal
+
+Align the backend mock data with the reference dashboard mockups by renaming the seeded sites/devices to the Indian-city naming shown in the mockup screenshots, and adjust the site/device count and health distribution to match exactly what the mockup displays.
+
+### Exact Prompt
+
+```text
+Convert these site names as per the mockup with Indian sites.
+The reference screenshots (final-overview.png, final-organization.png,
+final-site.png, final-edge.png) show Indian-city branches, but the
+backend mock data currently uses US cities. Update MockDataStore so the
+seeded organisation, sites, devices, and interfaces match the mockup:
+5 sites (Mumbai-Branch, Bangalore-Branch, Pune-Branch, Chennai-Branch,
+Hyderabad-DC) with the health distribution shown
+(3 HEALTHY, 1 DEGRADED, 1 DOWN).
+```
+
+### Files / Context Provided
+
+- `backend/src/main/java/com/example/sdwan/data/MockDataStore.java`
+- `frontend/public/final_dashboard_mock/final-overview.png` (reference mockup)
+- `frontend/public/final_dashboard_mock/final-organization.png` (reference mockup)
+- `frontend/public/final_dashboard_mock/final-site.png` (reference mockup)
+
+### Output Summary
+
+Rewrote the seed data in `MockDataStore` to match the mockup:
+- Organisation renamed `Acme Networks` (North America) -> `Acme Corporation` (India)
+- Sites changed from 4 US cities (New York HQ, Los Angeles Branch, Chicago Office, Seattle Data Center) to 5 Indian sites: `Mumbai-Branch`, `Bangalore-Branch`, `Pune-Branch`, `Chennai-Branch`, `Hyderabad-DC`
+- Devices reduced from 12 to 9 and renamed to city-prefixed edge devices (`MUM-EDGE-01/02`, `BLR-EDGE-01/02`, `PUN-EDGE-01/02`, `CHN-EDGE-01/02`, `HYD-EDGE-01`); models switched to `vEdge Cloud` / `vEdge 100` / `vEdge 5000`
+- Health distribution set to match the overview screenshot: Mumbai HEALTHY, Bangalore HEALTHY, Pune DEGRADED (1 device offline), Chennai DOWN (both offline), Hyderabad HEALTHY -> totals 3 HEALTHY / 1 DEGRADED / 1 DOWN, 6 online / 3 offline devices
+- Interfaces renamed from `GigabitEthernet0/0/0` style to the mockup's `WAN1` / `WAN2` / `LAN1` / `LAN2` / `LAN3` labels; IP scheme realigned per site (`100.64.x` Mumbai, `100.65.x` Bangalore, etc.)
+- Sine-wave WAN traffic parameters re-tuned for all 9 devices, with offline devices' interfaces set to zero traffic
+
+### What I Kept
+
+- The deterministic sine-wave WAN-history generator (unchanged formula) — only the per-interface base/amplitude parameters were re-mapped to the new device IDs
+- The `@PostConstruct` single-source-of-truth seeding approach
+- Site health still computed from device statuses (not hardcoded) — only the seed data changed, the aggregation logic was untouched
+
+### What I Changed Manually
+
+- (fill in anything you adjusted after the rewrite — e.g. tweaked a specific IP, uptime string, or traffic value — otherwise leave as "None")
+
+### What AI Missed Or Got Wrong
+
+- The first attempt to edit the device block failed on an em-dash (—) encoding mismatch in the offline-device uptime values; the file had to be rewritten in full rather than patched in place
+- Site-name alignment is driven entirely by the mockup screenshots, not by `instruction.md` (which does not specify city names) — this is a presentation-matching decision, not a hard requirement
+
+### Reusable?
+
+`no` — this is project-specific seed data tuned to one set of mockups. The approach (read the mockup, align deterministic seed data to it) is reusable, but the specific names/values are not.
+
+---
+
 ## Example Entry
 
 ### Date

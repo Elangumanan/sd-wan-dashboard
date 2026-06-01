@@ -10,6 +10,13 @@ import java.util.*;
 /**
  * Single source of truth for all in-memory mock data.
  * Initialized once at startup — deterministic, no random seeds.
+ *
+ * Site layout (matches the reference dashboard mockup):
+ *   site-001 Mumbai-Branch    — 2 devices, both ONLINE   → HEALTHY
+ *   site-002 Bangalore-Branch — 2 devices, both ONLINE   → HEALTHY
+ *   site-003 Pune-Branch      — 2 devices, one OFFLINE   → DEGRADED
+ *   site-004 Chennai-Branch   — 2 devices, both OFFLINE  → DOWN
+ *   site-005 Hyderabad-DC     — 1 device,  ONLINE        → HEALTHY
  */
 @Component
 public class MockDataStore {
@@ -42,19 +49,20 @@ public class MockDataStore {
     private void seedOrganization() {
         Organization org = new Organization(
                 "org-001",
-                "Acme Networks",
-                "Enterprise SD-WAN deployment across North America",
-                "North America"
+                "Acme Corporation",
+                "Enterprise SD-WAN deployment across India",
+                "India"
         );
         organizations.put(org.id(), org);
     }
 
     private void seedSites() {
         for (Site s : List.of(
-                site("site-001", "org-001", "New York HQ",         "New York, NY"),
-                site("site-002", "org-001", "Los Angeles Branch",  "Los Angeles, CA"),
-                site("site-003", "org-001", "Chicago Office",      "Chicago, IL"),
-                site("site-004", "org-001", "Seattle Data Center", "Seattle, WA")
+                site("site-001", "org-001", "Mumbai-Branch",    "Mumbai, MH"),
+                site("site-002", "org-001", "Bangalore-Branch", "Bangalore, KA"),
+                site("site-003", "org-001", "Pune-Branch",      "Pune, MH"),
+                site("site-004", "org-001", "Chennai-Branch",   "Chennai, TN"),
+                site("site-005", "org-001", "Hyderabad-DC",     "Hyderabad, TS")
         )) {
             sites.put(s.id(), s);
         }
@@ -66,22 +74,20 @@ public class MockDataStore {
         Instant offline40h = Instant.parse("2026-05-29T08:00:00Z");
 
         for (Device d : List.of(
-                // site-001 — all ONLINE → HEALTHY
-                device("dev-001", "site-001", "NYC-EDGE-01",   "Cisco ISR 4331", DeviceStatus.ONLINE,  DeviceRole.ACTIVE,  "5d 14h 32m",  "10.1.1.1", "17.12.3", onlineAt),
-                device("dev-002", "site-001", "NYC-EDGE-02",   "Cisco ISR 4331", DeviceStatus.ONLINE,  DeviceRole.STANDBY, "5d 14h 28m",  "10.1.1.2", "17.12.3", onlineAt),
-                device("dev-003", "site-001", "NYC-CORE-01",   "Cisco ISR 4451", DeviceStatus.ONLINE,  DeviceRole.ACTIVE,  "12d 3h 15m",  "10.1.1.3", "17.12.3", onlineAt),
-                // site-002 — dev-005 offline → DEGRADED
-                device("dev-004", "site-002", "LAX-EDGE-01",   "Cisco ISR 4331", DeviceStatus.ONLINE,  DeviceRole.ACTIVE,  "3d 22h 10m",  "10.2.1.1", "17.11.2", onlineAt),
-                device("dev-005", "site-002", "LAX-EDGE-02",   "Cisco ISR 4331", DeviceStatus.OFFLINE, DeviceRole.STANDBY, "—",           "10.2.1.2", "17.11.2", offline5h),
-                device("dev-006", "site-002", "LAX-CORE-01",   "Cisco ISR 4451", DeviceStatus.ONLINE,  DeviceRole.ACTIVE,  "8d 7h 45m",   "10.2.1.3", "17.11.2", onlineAt),
-                // site-003 — all offline → DOWN
-                device("dev-007", "site-003", "CHI-EDGE-01",   "Cisco ISR 4331", DeviceStatus.OFFLINE, DeviceRole.ACTIVE,  "—",           "10.3.1.1", "17.10.1", offline40h),
-                device("dev-008", "site-003", "CHI-CORE-01",   "Cisco ISR 4451", DeviceStatus.OFFLINE, DeviceRole.ACTIVE,  "—",           "10.3.1.2", "17.10.1", offline40h),
-                // site-004 — all ONLINE → HEALTHY
-                device("dev-009", "site-004", "SEA-EDGE-01",   "Cisco ISR 4331", DeviceStatus.ONLINE,  DeviceRole.ACTIVE,  "15d 2h 18m",  "10.4.1.1", "17.12.3", onlineAt),
-                device("dev-010", "site-004", "SEA-EDGE-02",   "Cisco ISR 4331", DeviceStatus.ONLINE,  DeviceRole.STANDBY, "15d 2h 05m",  "10.4.1.2", "17.12.3", onlineAt),
-                device("dev-011", "site-004", "SEA-CORE-01",   "Cisco ISR 4451", DeviceStatus.ONLINE,  DeviceRole.ACTIVE,  "22d 11h 30m", "10.4.1.3", "17.12.3", onlineAt),
-                device("dev-012", "site-004", "SEA-BACKUP-01", "Cisco ISR 4331", DeviceStatus.ONLINE,  DeviceRole.STANDBY, "7d 19h 42m",  "10.4.1.4", "17.12.3", onlineAt)
+                // site-001 Mumbai-Branch — both ONLINE → HEALTHY
+                device("dev-001", "site-001", "MUM-EDGE-01", "vEdge Cloud", DeviceStatus.ONLINE,  DeviceRole.ACTIVE,  "5d 14h 32m", "10.1.1.1", "17.12.3", onlineAt),
+                device("dev-002", "site-001", "MUM-EDGE-02", "vEdge Cloud", DeviceStatus.ONLINE,  DeviceRole.STANDBY, "5d 14h 28m", "10.1.1.2", "17.12.3", onlineAt),
+                // site-002 Bangalore-Branch — both ONLINE → HEALTHY
+                device("dev-003", "site-002", "BLR-EDGE-01", "vEdge Cloud", DeviceStatus.ONLINE,  DeviceRole.ACTIVE,  "3d 8h 10m",  "10.2.1.1", "17.12.3", onlineAt),
+                device("dev-004", "site-002", "BLR-EDGE-02", "vEdge 100",   DeviceStatus.ONLINE,  DeviceRole.STANDBY, "3d 8h 5m",   "10.2.1.2", "17.11.2", onlineAt),
+                // site-003 Pune-Branch — one OFFLINE → DEGRADED
+                device("dev-005", "site-003", "PUN-EDGE-01", "vEdge 100",   DeviceStatus.ONLINE,  DeviceRole.ACTIVE,  "1d 2h 44m",  "10.3.1.1", "17.11.2", onlineAt),
+                device("dev-006", "site-003", "PUN-EDGE-02", "vEdge 100",   DeviceStatus.OFFLINE, DeviceRole.STANDBY, "—",          "10.3.1.2", "17.11.2", offline5h),
+                // site-004 Chennai-Branch — all OFFLINE → DOWN
+                device("dev-007", "site-004", "CHN-EDGE-01", "vEdge Cloud", DeviceStatus.OFFLINE, DeviceRole.ACTIVE,  "—",          "10.4.1.1", "17.10.1", offline40h),
+                device("dev-008", "site-004", "CHN-EDGE-02", "vEdge Cloud", DeviceStatus.OFFLINE, DeviceRole.STANDBY, "—",          "10.4.1.2", "17.10.1", offline40h),
+                // site-005 Hyderabad-DC — single device ONLINE → HEALTHY
+                device("dev-009", "site-005", "HYD-EDGE-01", "vEdge 5000",  DeviceStatus.ONLINE,  DeviceRole.ACTIVE,  "12d 6h 0m",  "10.5.1.1", "17.12.3", onlineAt)
         )) {
             devices.put(d.id(), d);
         }
@@ -89,55 +95,54 @@ public class MockDataStore {
 
     private void seedInterfaces() {
         // Naming convention: iface-<deviceId>-<label>
-        // Edge routers: 1 WAN + 1 LAN
-        // Core routers: 2 WAN + 1 LAN
+        // Each edge device: 2 WAN (WAN1, WAN2) + LAN interfaces
         // Offline devices: all interfaces DOWN
 
-        // site-001
-        wanIface("iface-dev001-wan0", "dev-001", "GigabitEthernet0/0/0", InterfaceStatus.UP,   "100.68.1.1",  1_000);
-        lanIface("iface-dev001-lan0", "dev-001", "GigabitEthernet0/1/0", InterfaceStatus.UP,   "192.168.1.1/24", 1_000,  85.0,  32.0);
+        // site-001 Mumbai-Branch
+        wanIface("iface-dev001-wan0", "dev-001", "WAN1", InterfaceStatus.UP, "100.64.1.1", 1_000);
+        wanIface("iface-dev001-wan1", "dev-001", "WAN2", InterfaceStatus.UP, "100.64.2.1", 1_000);
+        lanIface("iface-dev001-lan0", "dev-001", "LAN1", InterfaceStatus.UP, "192.168.1.1/24", 1_000, 85.0, 32.0);
+        lanIface("iface-dev001-lan1", "dev-001", "LAN2", InterfaceStatus.UP, "192.168.2.1/24", 1_000, 40.0, 18.0);
+        lanIface("iface-dev001-lan2", "dev-001", "LAN3", InterfaceStatus.UP, "192.168.3.1/24", 1_000, 22.0, 10.0);
 
-        wanIface("iface-dev002-wan0", "dev-002", "GigabitEthernet0/0/0", InterfaceStatus.UP,   "100.68.1.2",  1_000);
-        lanIface("iface-dev002-lan0", "dev-002", "GigabitEthernet0/1/0", InterfaceStatus.UP,   "192.168.1.2/24", 1_000,  76.0,  28.0);
+        wanIface("iface-dev002-wan0", "dev-002", "WAN1", InterfaceStatus.UP, "100.64.1.2", 1_000);
+        wanIface("iface-dev002-wan1", "dev-002", "WAN2", InterfaceStatus.UP, "100.64.2.2", 1_000);
+        lanIface("iface-dev002-lan0", "dev-002", "LAN1", InterfaceStatus.UP, "192.168.1.2/24", 1_000, 76.0, 28.0);
+        lanIface("iface-dev002-lan1", "dev-002", "LAN2", InterfaceStatus.UP, "192.168.2.2/24", 1_000, 35.0, 15.0);
 
-        wanIface("iface-dev003-wan0", "dev-003", "GigabitEthernet0/0/0", InterfaceStatus.UP,   "100.68.1.3", 10_000);
-        wanIface("iface-dev003-wan1", "dev-003", "GigabitEthernet0/0/1", InterfaceStatus.UP,   "100.68.1.4", 10_000);
-        lanIface("iface-dev003-lan0", "dev-003", "GigabitEthernet0/1/0", InterfaceStatus.UP,   "192.168.1.3/24", 10_000, 320.0, 110.0);
+        // site-002 Bangalore-Branch
+        wanIface("iface-dev003-wan0", "dev-003", "WAN1", InterfaceStatus.UP, "100.65.1.1", 1_000);
+        wanIface("iface-dev003-wan1", "dev-003", "WAN2", InterfaceStatus.UP, "100.65.2.1", 1_000);
+        lanIface("iface-dev003-lan0", "dev-003", "LAN1", InterfaceStatus.UP, "192.168.10.1/24", 1_000, 92.0, 38.0);
 
-        // site-002
-        wanIface("iface-dev004-wan0", "dev-004", "GigabitEthernet0/0/0", InterfaceStatus.UP,   "100.68.2.1",  1_000);
-        lanIface("iface-dev004-lan0", "dev-004", "GigabitEthernet0/1/0", InterfaceStatus.UP,   "192.168.2.1/24", 1_000,  92.0,  38.0);
+        wanIface("iface-dev004-wan0", "dev-004", "WAN1", InterfaceStatus.UP, "100.65.1.2", 1_000);
+        wanIface("iface-dev004-wan1", "dev-004", "WAN2", InterfaceStatus.UP, "100.65.2.2", 1_000);
+        lanIface("iface-dev004-lan0", "dev-004", "LAN1", InterfaceStatus.UP, "192.168.10.2/24", 1_000, 60.0, 24.0);
 
-        wanIface("iface-dev005-wan0", "dev-005", "GigabitEthernet0/0/0", InterfaceStatus.DOWN, "100.68.2.2",  1_000);
-        lanIface("iface-dev005-lan0", "dev-005", "GigabitEthernet0/1/0", InterfaceStatus.DOWN, "192.168.2.2/24", 1_000,   0.0,   0.0);
+        // site-003 Pune-Branch
+        wanIface("iface-dev005-wan0", "dev-005", "WAN1", InterfaceStatus.UP, "100.66.1.1", 1_000);
+        wanIface("iface-dev005-wan1", "dev-005", "WAN2", InterfaceStatus.UP, "100.66.2.1", 1_000);
+        lanIface("iface-dev005-lan0", "dev-005", "LAN1", InterfaceStatus.UP, "192.168.20.1/24", 1_000, 70.0, 28.0);
 
-        wanIface("iface-dev006-wan0", "dev-006", "GigabitEthernet0/0/0", InterfaceStatus.UP,   "100.68.2.3", 10_000);
-        wanIface("iface-dev006-wan1", "dev-006", "GigabitEthernet0/0/1", InterfaceStatus.UP,   "100.68.2.4", 10_000);
-        lanIface("iface-dev006-lan0", "dev-006", "GigabitEthernet0/1/0", InterfaceStatus.UP,   "192.168.2.3/24", 10_000, 280.0,  95.0);
+        // dev-006 OFFLINE — all interfaces DOWN
+        wanIface("iface-dev006-wan0", "dev-006", "WAN1", InterfaceStatus.DOWN, "100.66.1.2", 1_000);
+        wanIface("iface-dev006-wan1", "dev-006", "WAN2", InterfaceStatus.DOWN, "100.66.2.2", 1_000);
+        lanIface("iface-dev006-lan0", "dev-006", "LAN1", InterfaceStatus.DOWN, "192.168.20.2/24", 1_000, 0.0, 0.0);
 
-        // site-003 (all DOWN)
-        wanIface("iface-dev007-wan0", "dev-007", "GigabitEthernet0/0/0", InterfaceStatus.DOWN, "100.68.3.1",  1_000);
-        lanIface("iface-dev007-lan0", "dev-007", "GigabitEthernet0/1/0", InterfaceStatus.DOWN, "192.168.3.1/24", 1_000,   0.0,   0.0);
+        // site-004 Chennai-Branch (all DOWN)
+        wanIface("iface-dev007-wan0", "dev-007", "WAN1", InterfaceStatus.DOWN, "100.67.1.1", 1_000);
+        wanIface("iface-dev007-wan1", "dev-007", "WAN2", InterfaceStatus.DOWN, "100.67.2.1", 1_000);
+        lanIface("iface-dev007-lan0", "dev-007", "LAN1", InterfaceStatus.DOWN, "192.168.30.1/24", 1_000, 0.0, 0.0);
 
-        wanIface("iface-dev008-wan0", "dev-008", "GigabitEthernet0/0/0", InterfaceStatus.DOWN, "100.68.3.2", 10_000);
-        wanIface("iface-dev008-wan1", "dev-008", "GigabitEthernet0/0/1", InterfaceStatus.DOWN, "100.68.3.3", 10_000);
-        lanIface("iface-dev008-lan0", "dev-008", "GigabitEthernet0/1/0", InterfaceStatus.DOWN, "192.168.3.2/24", 10_000,   0.0,   0.0);
+        wanIface("iface-dev008-wan0", "dev-008", "WAN1", InterfaceStatus.DOWN, "100.67.1.2", 1_000);
+        wanIface("iface-dev008-wan1", "dev-008", "WAN2", InterfaceStatus.DOWN, "100.67.2.2", 1_000);
+        lanIface("iface-dev008-lan0", "dev-008", "LAN1", InterfaceStatus.DOWN, "192.168.30.2/24", 1_000, 0.0, 0.0);
 
-        // site-004
-        wanIface("iface-dev009-wan0", "dev-009", "GigabitEthernet0/0/0", InterfaceStatus.UP,   "100.68.4.1",  1_000);
-        wanIface("iface-dev009-wan1", "dev-009", "GigabitEthernet0/0/1", InterfaceStatus.UP,   "100.68.4.2",  1_000);
-        lanIface("iface-dev009-lan0", "dev-009", "GigabitEthernet0/1/0", InterfaceStatus.UP,   "192.168.4.1/24", 1_000, 105.0,  44.0);
-
-        wanIface("iface-dev010-wan0", "dev-010", "GigabitEthernet0/0/0", InterfaceStatus.UP,   "100.68.4.3",  1_000);
-        wanIface("iface-dev010-wan1", "dev-010", "GigabitEthernet0/0/1", InterfaceStatus.UP,   "100.68.4.4",  1_000);
-        lanIface("iface-dev010-lan0", "dev-010", "GigabitEthernet0/1/0", InterfaceStatus.UP,   "192.168.4.2/24", 1_000,  98.0,  40.0);
-
-        wanIface("iface-dev011-wan0", "dev-011", "GigabitEthernet0/0/0", InterfaceStatus.UP,   "100.68.4.5", 10_000);
-        wanIface("iface-dev011-wan1", "dev-011", "GigabitEthernet0/0/1", InterfaceStatus.UP,   "100.68.4.6", 10_000);
-        lanIface("iface-dev011-lan0", "dev-011", "GigabitEthernet0/1/0", InterfaceStatus.UP,   "192.168.4.3/24", 10_000, 410.0, 140.0);
-
-        wanIface("iface-dev012-wan0", "dev-012", "GigabitEthernet0/0/0", InterfaceStatus.UP,   "100.68.4.7",  1_000);
-        lanIface("iface-dev012-lan0", "dev-012", "GigabitEthernet0/1/0", InterfaceStatus.UP,   "192.168.4.4/24", 1_000,  55.0,  20.0);
+        // site-005 Hyderabad-DC
+        wanIface("iface-dev009-wan0", "dev-009", "WAN1", InterfaceStatus.UP, "100.68.1.1", 10_000);
+        wanIface("iface-dev009-wan1", "dev-009", "WAN2", InterfaceStatus.UP, "100.68.2.1", 10_000);
+        lanIface("iface-dev009-lan0", "dev-009", "LAN1", InterfaceStatus.UP, "192.168.40.1/24", 10_000, 320.0, 110.0);
+        lanIface("iface-dev009-lan1", "dev-009", "LAN2", InterfaceStatus.UP, "192.168.40.2/24", 10_000, 180.0, 70.0);
     }
 
     /**
@@ -169,28 +174,29 @@ public class MockDataStore {
     /** Per-interface traffic parameters: [baseRx, ampRx, baseTx, ampTx] in Mbps. */
     private Map<String, double[]> wanTrafficParams() {
         Map<String, double[]> m = new HashMap<>();
-        // site-001
+        // site-001 Mumbai
         m.put("iface-dev001-wan0", new double[]{ 50,  80,  20,  40});
+        m.put("iface-dev001-wan1", new double[]{ 25,  45,  10,  22});
         m.put("iface-dev002-wan0", new double[]{ 45,  70,  18,  35});
-        m.put("iface-dev003-wan0", new double[]{200, 300,  80, 150});
-        m.put("iface-dev003-wan1", new double[]{180, 280,  70, 130});
-        // site-002
-        m.put("iface-dev004-wan0", new double[]{ 60,  90,  25,  45});
-        m.put("iface-dev005-wan0", new double[]{  0,   0,   0,   0}); // OFFLINE
-        m.put("iface-dev006-wan0", new double[]{ 55,  85,  22,  42});
-        m.put("iface-dev006-wan1", new double[]{ 48,  75,  19,  38});
-        // site-003 (all OFFLINE)
+        m.put("iface-dev002-wan1", new double[]{ 22,  40,   9,  20});
+        // site-002 Bangalore
+        m.put("iface-dev003-wan0", new double[]{ 60,  90,  25,  45});
+        m.put("iface-dev003-wan1", new double[]{ 30,  50,  12,  25});
+        m.put("iface-dev004-wan0", new double[]{ 48,  75,  19,  38});
+        m.put("iface-dev004-wan1", new double[]{ 24,  42,  10,  21});
+        // site-003 Pune (dev-005 online, dev-006 OFFLINE → zero)
+        m.put("iface-dev005-wan0", new double[]{ 55,  85,  22,  42});
+        m.put("iface-dev005-wan1", new double[]{ 28,  48,  11,  24});
+        m.put("iface-dev006-wan0", new double[]{  0,   0,   0,   0});
+        m.put("iface-dev006-wan1", new double[]{  0,   0,   0,   0});
+        // site-004 Chennai (all OFFLINE → zero)
         m.put("iface-dev007-wan0", new double[]{  0,   0,   0,   0});
+        m.put("iface-dev007-wan1", new double[]{  0,   0,   0,   0});
         m.put("iface-dev008-wan0", new double[]{  0,   0,   0,   0});
         m.put("iface-dev008-wan1", new double[]{  0,   0,   0,   0});
-        // site-004
-        m.put("iface-dev009-wan0", new double[]{ 75, 100,  30,  55});
-        m.put("iface-dev009-wan1", new double[]{ 65,  90,  28,  48});
-        m.put("iface-dev010-wan0", new double[]{ 70,  95,  28,  52});
-        m.put("iface-dev010-wan1", new double[]{ 62,  85,  25,  45});
-        m.put("iface-dev011-wan0", new double[]{250, 350, 100, 180});
-        m.put("iface-dev011-wan1", new double[]{230, 320,  90, 160});
-        m.put("iface-dev012-wan0", new double[]{ 40,  60,  15,  30});
+        // site-005 Hyderabad (high-capacity DC)
+        m.put("iface-dev009-wan0", new double[]{250, 350, 100, 180});
+        m.put("iface-dev009-wan1", new double[]{180, 280,  70, 130});
         return m;
     }
 
@@ -234,6 +240,7 @@ public class MockDataStore {
         interfaces.put(id, new NetworkInterface(id, deviceId, name, InterfaceType.LAN, status, ipAddress, speedMbps));
         lanCurrentTraffic.put(id, new double[]{currentRx, currentTx});
     }
+
     private static Site site(String id, String orgId, String name, String location) {
         return new Site(id, orgId, name, location);
     }
