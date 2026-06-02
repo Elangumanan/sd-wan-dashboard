@@ -1,5 +1,6 @@
 package com.example.sdwan.exception;
 
+import com.example.sdwan.config.JacksonConfig;
 import com.example.sdwan.controller.OrganizationController;
 import com.example.sdwan.service.OrganizationService;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Verifies the ErrorResponse shape (code, message, details) for each exception type.
  */
 @WebMvcTest(OrganizationController.class)
-@Import(GlobalExceptionHandler.class)
+@Import({JacksonConfig.class, GlobalExceptionHandler.class})
 class GlobalExceptionHandlerTest {
 
     @Autowired MockMvc mockMvc;

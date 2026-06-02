@@ -3,6 +3,7 @@ package com.example.sdwan.controller;
 import com.example.sdwan.domain.SiteHealth;
 import com.example.sdwan.dto.SiteDetailDto;
 import com.example.sdwan.dto.SiteListItemDto;
+import com.example.sdwan.config.JacksonConfig;
 import com.example.sdwan.exception.GlobalExceptionHandler;
 import com.example.sdwan.exception.ResourceNotFoundException;
 import com.example.sdwan.service.SiteService;
@@ -20,7 +21,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(SiteController.class)
-@Import(GlobalExceptionHandler.class)
+@Import({JacksonConfig.class, GlobalExceptionHandler.class})
 class SiteControllerTest {
 
     @Autowired MockMvc mockMvc;

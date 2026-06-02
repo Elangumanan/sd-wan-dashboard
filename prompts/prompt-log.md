@@ -1840,6 +1840,105 @@ Rewrote the seed data in `MockDataStore` to match the mockup:
 
 ---
 
+## Entry 28 — Fix Spring Boot Compilation Error (Device Constructor Mismatch)
+
+### Date
+
+`2026-06-01`
+
+### Goal
+
+Resolve a test-compile failure caused by a `Device` constructor call in `DashboardServiceTest` that was missing the `role` and `uptime` arguments added in Entry 21 and Entry 24.
+
+### Exact Prompt
+
+```text
+We have java spring boot compilation error. Analyse and fix it
+```
+
+### Files / Context Provided
+
+- `src/test/java/com/example/sdwan/service/DashboardServiceTest.java`
+- `src/main/java/com/example/sdwan/domain/Device.java`
+
+### Output Summary
+
+AI ran `mvn compile` (success) and then `mvn test-compile` (failure). The error was on `DashboardServiceTest.java:160` — the `device()` test helper called `new Device(...)` with 8 arguments but the constructor now requires 10 (`role` and `uptime` were added in previous entries). The fix was adding `DeviceRole.ACTIVE` and `"0d 0h 0m"` as placeholder values. `DeviceRole` was already covered by the existing `import com.example.sdwan.domain.*` wildcard so no import change was needed. `mvn test-compile` passed after the fix.
+
+### What I Kept
+
+- Fix as proposed — minimal one-line change.
+
+### What I Changed Manually
+
+- None
+
+### What AI Missed Or Got Wrong
+
+- Nothing — root cause was immediately identified from the compiler output.
+
+### Reusable?
+
+`yes` — whenever a domain class constructor gains new required fields, all test helper methods that call it must be updated; `mvn test-compile` (not just `mvn compile`) is the correct command to catch these mismatches.
+
+---
+
+## Entry 29 — Fix Failing Tests for GlobalExceptionHandler
+
+### Date
+
+`2026-06-02`
+
+### Goal
+
+Fix all failing controller and exception-handler tests after upgrading the controller URL structure and service signatures to a hierarchical path layout (`/api/organizations/{orgId}/sites/{siteId}/devices/{deviceId}`).
+
+### Exact Prompt
+
+```text
+Tests case are failing for global exception handler
+```
+
+### Files / Context Provided
+
+- `src/test/java/com/example/sdwan/controller/OrganizationControllerTest.java`
+- `src/test/java/com/example/sdwan/controller/SiteControllerTest.java`
+- `src/test/java/com/example/sdwan/controller/DeviceControllerTest.java`
+- `src/test/java/com/example/sdwan/exception/GlobalExceptionHandlerTest.java`
+- `src/test/java/com/example/sdwan/controller/DashboardControllerTest.java`
+- `src/main/java/com/example/sdwan/config/JacksonConfig.java`
+- `src/main/java/com/example/sdwan/controller/OrganizationController.java`
+
+### Output Summary
+
+AI diagnosed two root causes:
+
+**1. `JacksonConfig` not loaded in `@WebMvcTest` slices.**
+`@WebMvcTest` only loads the web layer — it does not pick up `@Configuration` beans unless explicitly imported. Without `JacksonConfig`, Jackson falls back to getter-based discovery, finds no `getXxx()` methods on the immutable response classes (`SuccessResponse`, `ErrorResponse`), and serialises every response as `{}`. Fix: added `@Import({JacksonConfig.class, GlobalExceptionHandler.class})` to all five test classes.
+
+**2. `GlobalExceptionHandlerTest.returns400_forMalformedRequestBody` returned 405 instead of 400.**
+The test POSTs to `/api/organizations` with malformed JSON to trigger `HttpMessageNotReadableException`. Since `OrganizationController` had no `@PostMapping`, Spring returned 405 (Method Not Allowed) before the body was ever read, so the exception handler was never reached. Fix: added a minimal `@PostMapping` with `@RequestBody Map<String, Object>` to `OrganizationController`. Invalid JSON now triggers `HttpMessageNotReadableException` → `GlobalExceptionHandler` → 400 `MALFORMED_REQUEST` as the test expects.
+
+All 47 tests passed after the two fixes.
+
+### What I Kept
+
+- Both fixes as proposed.
+
+### What I Changed Manually
+
+- None
+
+### What AI Missed Or Got Wrong
+
+- Nothing — both root causes were correctly identified and the smallest possible fix was applied in each case.
+
+### Reusable?
+
+`yes` — any `@WebMvcTest` that tests immutable classes with non-JavaBean accessors must `@Import` the Jackson field-visibility config; this is a recurring pattern whenever immutable domain or response classes are introduced.
+
+---
+
 ## Example Entry
 
 ### Date

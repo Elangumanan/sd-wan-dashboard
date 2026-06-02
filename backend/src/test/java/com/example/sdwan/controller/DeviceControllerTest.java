@@ -4,6 +4,7 @@ import com.example.sdwan.domain.DeviceRole;
 import com.example.sdwan.domain.DeviceStatus;
 import com.example.sdwan.dto.DeviceDetailDto;
 import com.example.sdwan.dto.WanHistoryDto;
+import com.example.sdwan.config.JacksonConfig;
 import com.example.sdwan.exception.GlobalExceptionHandler;
 import com.example.sdwan.exception.ResourceNotFoundException;
 import com.example.sdwan.service.DeviceService;
@@ -21,7 +22,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(DeviceController.class)
-@Import(GlobalExceptionHandler.class)
+@Import({JacksonConfig.class, GlobalExceptionHandler.class})
 class DeviceControllerTest {
 
     @Autowired MockMvc mockMvc;

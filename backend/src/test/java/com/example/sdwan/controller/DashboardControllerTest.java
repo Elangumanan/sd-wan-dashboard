@@ -2,6 +2,7 @@ package com.example.sdwan.controller;
 
 import com.example.sdwan.domain.SiteHealth;
 import com.example.sdwan.dto.*;
+import com.example.sdwan.config.JacksonConfig;
 import com.example.sdwan.exception.GlobalExceptionHandler;
 import com.example.sdwan.service.DashboardService;
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(DashboardController.class)
-@Import(GlobalExceptionHandler.class)
+@Import({JacksonConfig.class, GlobalExceptionHandler.class})
 class DashboardControllerTest {
 
     @Autowired MockMvc mockMvc;
